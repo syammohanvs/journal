@@ -3,8 +3,4 @@ numpy
 pandas
 pydeck
 streamlit
-google.cloud
-google.cloud.core
-google.auth
-google.resumable.media
-google.api.core
+
