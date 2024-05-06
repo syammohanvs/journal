@@ -4,5 +4,5 @@ pandas
 pydeck
 streamlit
 google-cloud-firestore
-virtualenv
+firebase_admin
 
