@@ -41,6 +41,36 @@ def run():
     """
     )
 
+    def get_open_trades(trade):
+        
+        buylist = dict()
+        selllist = dict()
+        openpos = dict()
+        index = 0
+        
+        # for item in trade:
+        #     if "BUY" in item["transactionType"]: 
+        #         buylist = item
+        #         os_silver_netbuy = os_silver_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+        #         overnight_silver_fut_qty = overnight_silver_fut_qty + int(item["tradedQuantity"])
+        #     if "SELL" in item["transactionType"]:
+        #         selllist = item
+        #         os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+        #         overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
+        
+        # if(buylist):            
+        #     for buytrade in buylist:                            
+        #         for selltrade in selllist :
+        #             if(buytrade["customSymbol"] != selltrade["customSymbol"]):
+        #                 continue
+        #             else
+        #                 openpos[index] = 
+            
+            
+        # else:
+            
+
+
     def mtsm_pnl():
         mtsm_starttime = datetime.time(9, 16, 0)
         mtsm_endtime = datetime.time(9, 45, 0)
@@ -58,6 +88,10 @@ def run():
         dts_finnifty_netbuy = dts_finnifty_netsell = dts_finnifty_charges = dts_finnifty_brokerage = dts_finnifty_numtrades = 0
         cts_silverfut_netbuy = cts_silverfut_netsell = cts_silverfut_charges = cts_silverfut_brokerage = cts_silverfut_numtrades = 0 
         os_silver_netbuy = os_silver_netsell = os_silver_charges = os_silver_brokerage = os_silver_numtrades = 0
+        overnight_silver_fut_pos = dict()
+        overnight_silver_fut_qty = 0
+        silver_margin_count = 0 
+        
         pagecount = 0
         current_date = start_date
         
@@ -71,7 +105,7 @@ def run():
                 pagecount = 0
                 current_date = current_date + datetime.timedelta(days=1)                
             else:
-                for item in data: 
+                for item in data:                     
                     if "BANKNIFTY" in item["customSymbol"] and "INTRADAY" in item["productType"] :
                         d = parser.parse(item["exchangeTime"]).time()
                         if mtsm_endtime >= d >= mtsm_starttime: 
@@ -168,22 +202,33 @@ def run():
                                 cts_silverfut_netbuy = cts_silverfut_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
                             if "SELL" in item["transactionType"]:
                                 cts_silverfut_netsell = cts_silverfut_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))                        
-                            cts_silverfut_brokerage = cts_silverfut_brokerage + float(item["brokerageCharges"])
-                            cts_silverfut_numtrades = cts_silverfut_numtrades + 1
-                            cts_silverfut_charges = cts_silverfut_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
+                        if "MARGIN" in item["productType"] :
+                            if "BUY" in item["transactionType"]: 
+                                cts_silverfut_netbuy = cts_silverfut_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+                            if "SELL" in item["transactionType"]:
+                                cts_silverfut_netsell = cts_silverfut_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))           
+                        cts_silverfut_brokerage = cts_silverfut_brokerage + float(item["brokerageCharges"])
+                        cts_silverfut_numtrades = cts_silverfut_numtrades + 1
+                        cts_silverfut_charges = cts_silverfut_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                     
                     if "SILVER" in item["customSymbol"] and "OPTFUT" in item["instrument"]:
+                        
                         if "BUY" in item["transactionType"]: 
                             os_silver_netbuy = os_silver_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+                            overnight_silver_fut_qty = overnight_silver_fut_qty + int(item["tradedQuantity"])
                         if "SELL" in item["transactionType"]:
                             os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+                            overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
+                        overnight_silver_fut_pos[silver_margin_count] = item                      
                         os_silver_brokerage = os_silver_brokerage + float(item["brokerageCharges"])
                         os_silver_numtrades = os_silver_numtrades + 1
                         os_silver_charges = os_silver_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                 
                 
-                pagecount = pagecount + 1          
-            
+                pagecount = pagecount + 1            
+       
+        Openpos_silver_fut = get_open_trades(overnight_silver_fut_pos)
+               
         mtsm_Grosspnl = round((mtsm_netsell - mtsm_netbuy)*75,2)
         mtsm_Chg = round(mtsm_charges,2)
         mtsm_netpnl = round(mtsm_Grosspnl - mtsm_Chg,2)
@@ -310,37 +355,39 @@ def run():
         charges_less_brokerage = round(charges - brokerage,2)
 
         st.write(":blue[Total Trades -->] :blue[" + str(data["os_banknifty_numtrades"] + data["os_bankex_numtrades"] + data["os_sensex_numtrades"] +  data["os_finnifty_numtrades"] + data["mtsm_numtrades"] + data["os_nifty_numtrades"] + data["dts_nifty_numtrades"] + data["dts_banknifty_numtrades"] + data["dts_finnifty_numtrades"] + data["cts_silverfut_numtrades"] + data["os_silver_numtrades"])+"]")
-        st.write(":blue[Charges -->] :blue[" + str(charges_less_brokerage)+"]")
-        st.write(":blue[Brokerage -->] :blue[" + str(round(brokerage,4))+"]")
-        st.write(":blue[Net PnL -->] :blue[" + str(net_pnl)+"]")
-        st.write(":blue[Net PnL (%) -->] :blue[" + str(round(((net_pnl / capital)*100),4))+"]")
+        st.write(":blue[Charges -->] :red[" + str(charges_less_brokerage)+"]")
+        st.write(":blue[Brokerage -->] :red[" + str(round(brokerage,4))+"]")
+        st.write(":blue[Net PnL -->] :green[" + str(net_pnl)+"]")
+        st.write(":blue[Net PnL (%) -->] :green[" + str(round(((net_pnl / capital)*100),4))+"]")
        
 
     def save_setting():
-        pass
-        # db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
-        # db = firestore.Client()
-        # doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
-        # doc_ref.set({
-        #     'userid': 't7support',
-        #     'capital': capital.__str__,
-        #     'startdate': start_date.__str__,
-        #     'enddate': end_date.__str__,
-        #     'api_token': token
-        # })
+        
+        db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
+        doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
+        doc_ref.set({
+            'userid': 't7support',
+            'capital': str(capital),
+            'startdate': str(start_date),
+            'enddate': str(end_date),
+            'api_token': token
+        })
 
 
     
     #main
 
+    db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
+    doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
+    doc = doc_ref.get().to_dict()
     
-    
+
     token = st.text_input("API Token")
     clientid = st.text_input("Client ID")
-    capital = st.number_input("Capital", min_value=0, max_value=None, value=7500000, step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
-    start_date = st.date_input("Start Date", datetime.date(2019, 7, 6))
-    end_date = st.date_input("End Date", datetime.datetime.now())
-   # st.button("Save", type="primary", on_click=save_setting) 
+    capital = st.number_input("Capital", min_value=0, max_value=None, value=int(doc["capital"]), step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
+    start_date = st.date_input("Start Date", value = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date())
+    end_date = st.date_input("End Date", value = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date())
+    st.button("Save", type="primary", on_click=save_setting) 
     st.button("Compute", type="primary", on_click=click_button)    
 
 
