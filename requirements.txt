@@ -4,5 +4,3 @@ pandas
 pydeck
 streamlit
 google-cloud-firestore
-firebase_admin
-

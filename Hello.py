@@ -64,7 +64,7 @@ def run():
         #             if(buytrade["customSymbol"] != selltrade["customSymbol"]):
         #                 continue
         #             else
-        #                 openpos[index] = 
+        #                 openpos[index] 
             
             
         # else:
