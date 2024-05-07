@@ -362,6 +362,7 @@ def run():
        
 
     def save_setting():
+<<<<<<< HEAD
         
         db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
         doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
@@ -370,6 +371,17 @@ def run():
             'capital': str(capital),
             'startdate': str(start_date),
             'enddate': str(end_date),
+=======
+        pass
+        #db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
+        db = firestore.Client()
+        doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
+        doc_ref.set({
+            'userid': 't7support',
+            'capital': capital.__str__,
+            'startdate': start_date.__str__,
+            'enddate': end_date.__str__,
+>>>>>>> dbdd0d5 (test)
             'api_token': token
         })
 
@@ -384,9 +396,15 @@ def run():
 
     token = st.text_input("API Token")
     clientid = st.text_input("Client ID")
+<<<<<<< HEAD
     capital = st.number_input("Capital", min_value=0, max_value=None, value=int(doc["capital"]), step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
     start_date = st.date_input("Start Date", value = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date())
     end_date = st.date_input("End Date", value = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date())
+=======
+    capital = st.number_input("Capital", min_value=0, max_value=None, value=7500000, step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
+    start_date = st.date_input("Start Date", datetime.date(2019, 7, 6))
+    end_date = st.date_input("End Date", datetime.datetime.now())
+>>>>>>> dbdd0d5 (test)
     st.button("Save", type="primary", on_click=save_setting) 
     st.button("Compute", type="primary", on_click=click_button)    
 
