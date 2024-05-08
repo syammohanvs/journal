@@ -63,8 +63,8 @@ def run():
         #         for selltrade in selllist :
         #             if(buytrade["customSymbol"] != selltrade["customSymbol"]):
         #                 continue
-        #             else
-        #                 openpos[index] 
+        #             else :
+        #                 openpos[index] ={'contract': buytrade["customSymbol"], 'tradeval': str(selltrade["tradedPrice"] - buytrade["tradedPrice"]), 'tradeqty': str(selltrade["tradedQuantity"] - buytrade["tradedQuantity"])}
             
             
         # else:
