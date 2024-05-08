@@ -45,8 +45,9 @@ def run():
         
         buylist = dict()
         selllist = dict()
-        openpos = dict()
+        tradelist = dict()
         index = 0
+        contract_in_list = False 
         
         # for item in trade:
         #     if "BUY" in item["transactionType"]: 
@@ -58,11 +59,47 @@ def run():
         #         os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
         #         overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
         
-        # if(buylist):            
+        # if(selllist) :
+        #     for selltrade in selllist: 
+        #         for contract in tradelist: 
+        #             if (contract["customSymbol"] == selltrade["customSymbol"]) :
+        #                 netqty = int(selltrade["tradedQuantity"]) + int(contract["tradedQuantity"])                        
+        #                 tradelist[index]['ltp'] =  selltrade["tradedPrice"]
+        #                 tradelist[index]['tradeqty'] =  netqty
+        #                 tradelist[index]["ltt"] = selltrade["exchangeTime"]
+        #                 contract_in_list = True    
+        #         if(contract_in_list == False):
+        #             tradelist[index] = {'contract': selltrade["customSymbol"], 'ltp': selltrade["tradedPrice"], 'tradeqty': selltrade["tradedQuantity"], 'ltt':selltrade["exchangeTime"]}
+        #             contract_in_list = False
+        #             index = index + 1
+        # max_index = index
+        # index = 0
+        # if(buylist) :
+        #     for buytrade in buylist: 
+        #         for contract in tradelist: 
+        #             if (contract["customSymbol"] == buytrade["customSymbol"]) :
+        #                 netqty = int(selltrade["tradedQuantity"]) - int(contract["tradedQuantity"])                        
+        #                 tradelist[index]['ltp'] =  selltrade["tradedPrice"]
+        #                 tradelist[index]['tradeqty'] =  netqty
+        #                 tradelist[index]["ltt"] = selltrade["exchangeTime"]
+        #                 contract_in_list = True    
+        #         if(contract_in_list == False):
+        #             tradelist[index] = {'contract': buytrade["customSymbol"], 'ltp': buytrade["tradedPrice"], 'tradeqty': buytrade["tradedQuantity"], 'ltt':buytrade["exchangeTime"]}
+        #             contract_in_list = False
+        #             max_index = max_index + 1    
+                 
+        
+        # if(buylist or selllist):            
         #     for buytrade in buylist:                            
         #         for selltrade in selllist :
-        #             if(buytrade["customSymbol"] != selltrade["customSymbol"]):
-        #                 continue
+        #             for contract in tradelist:                    
+        #                 if (contract["customSymbol"] == buytrade["customSymbol"] or (contract["customSymbol"] == selltrade["customSymbol"])
+        #                     contract_in_list = True    
+        #                 if(buytrade["customSymbol"] != selltrade["customSymbol"]):
+        #             if(contract_in_list == False)         
+        #                 tradelist[index] = {'contract': buytrade["customSymbol"], 'tradeval': str(selltrade["tradedPrice"] - buytrade["tradedPrice"]), 'tradeqty': str(selltrade["tradedQuantity"] - buytrade["tradedQuantity"])}
+                    
+        #                 openpos[index] ={'contract': buytrade["customSymbol"], 'tradeval': str(selltrade["tradedPrice"] - buytrade["tradedPrice"]), 'tradeqty': str(selltrade["tradedQuantity"] - buytrade["tradedQuantity"])}
         #             else :
         #                 openpos[index] ={'contract': buytrade["customSymbol"], 'tradeval': str(selltrade["tradedPrice"] - buytrade["tradedPrice"]), 'tradeqty': str(selltrade["tradedQuantity"] - buytrade["tradedQuantity"])}
             

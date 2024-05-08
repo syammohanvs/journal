@@ -1,13 +1,16 @@
 
 import streamlit as st
 import auth_functions
+from st_pages import hide_pages
 
+st.columns(3)[1].header("T7 Journal")
+
+#st.title("T7 Journal")
 ## -------------------------------------------------------------------------------------------------
 ## Not logged in -----------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 if 'user_info' not in st.session_state:
-    col1,col2,col3 = st.columns([1,2,1])
-
+    col1,col2,col3 = st.columns([1,2,1])    
     # Authentication form layout
     do_you_have_an_account = col2.selectbox(label='Do you have an account?',options=('Yes','No','I forgot my password'))
     auth_form = col2.form(key='Authentication form',clear_on_submit=False)
@@ -34,6 +37,7 @@ if 'user_info' not in st.session_state:
     if 'auth_success' in st.session_state:
         auth_notification.success(st.session_state.auth_success)
         del st.session_state.auth_success
+        st.switch_page("pages/Hello.py")
     elif 'auth_warning' in st.session_state:
         auth_notification.warning(st.session_state.auth_warning)
         del st.session_state.auth_warning

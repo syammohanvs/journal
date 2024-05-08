@@ -69,7 +69,7 @@ def sign_in(email:str, password:str) -> None:
     try:
         # Attempt to sign in with email and password
         id_token = sign_in_with_email_and_password(email,password)['idToken']
-
+        
         # Get account information
         user_info = get_account_info(id_token)["users"][0]
 
@@ -81,10 +81,12 @@ def sign_in(email:str, password:str) -> None:
         # Save user info to session state and rerun
         else:
             st.session_state.user_info = user_info
-            st.experimental_rerun()
+            #st.experimental_rerun()
+           
 
     except requests.exceptions.HTTPError as error:
         error_message = json.loads(error.args[1])['error']['message']
+        st.write(error_message)
         if error_message in {"INVALID_EMAIL","EMAIL_NOT_FOUND","INVALID_PASSWORD","MISSING_PASSWORD"}:
             st.session_state.auth_warning = 'Error: Use a valid email and password'
         else:
