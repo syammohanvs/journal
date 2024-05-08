@@ -4,3 +4,4 @@ pandas
 pydeck
 streamlit
 google-cloud-firestore
+google-auth-oauthlib

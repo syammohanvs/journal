@@ -20,7 +20,7 @@ import streamlit as st
 from streamlit.logger import get_logger
 from dateutil import parser 
 from google.cloud import firestore
-
+from google.oauth2 import service_account
 
 LOGGER = get_logger(__name__)
 
@@ -377,7 +377,10 @@ def run():
     
     #main
 
-    db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
+    key_dict = json.loads(st.secrets["textkey"])
+    creds = service_account.Credentials.from_service_account_info(key_dict)
+    db = firestore.Client(credentials=creds, project="t7member-a7b8a")   
+    #db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
     doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
     doc = doc_ref.get().to_dict()
     
