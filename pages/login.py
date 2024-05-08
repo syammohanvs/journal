@@ -1,46 +1,56 @@
+
 import streamlit as st
-import firebase_admin
-from firebase_admin import credentials, auth
+import auth_functions
 
-# Initialize the Firebase app
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+## -------------------------------------------------------------------------------------------------
+## Not logged in -----------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+if 'user_info' not in st.session_state:
+    col1,col2,col3 = st.columns([1,2,1])
 
-# Create a Firebase Auth object
-auth = auth.Client()
+    # Authentication form layout
+    do_you_have_an_account = col2.selectbox(label='Do you have an account?',options=('Yes','No','I forgot my password'))
+    auth_form = col2.form(key='Authentication form',clear_on_submit=False)
+    email = auth_form.text_input(label='Email')
+    password = auth_form.text_input(label='Password',type='password') if do_you_have_an_account in {'Yes','No'} else auth_form.empty()
+    auth_notification = col2.empty()
 
-# Create a session state object to store the user's login status
-session_state = st.session_state
+    # Sign In
+    if do_you_have_an_account == 'Yes' and auth_form.form_submit_button(label='Sign In',use_container_width=True,type='primary'):
+        with auth_notification, st.spinner('Signing in'):
+            auth_functions.sign_in(email,password)
 
-# Create a login form
-email = st.text_input("Email")
-password = st.text_input("Password", type="password")
-submit_button = st.button("Login")
+    # Create Account
+    elif do_you_have_an_account == 'No' and auth_form.form_submit_button(label='Create Account',use_container_width=True,type='primary'):
+        with auth_notification, st.spinner('Creating account'):
+            auth_functions.create_account(email,password)
 
-# Handle the login button click
-if submit_button:
-    try:
-        # Sign in with the provided email and password
-        user = auth.sign_in_with_email_and_password(email, password)
+    # Password Reset
+    elif do_you_have_an_account == 'I forgot my password' and auth_form.form_submit_button(label='Send Password Reset Email',use_container_width=True,type='primary'):
+        with auth_notification, st.spinner('Sending password reset link'):
+            auth_functions.reset_password(email)
 
-        # If the login is successful, set the user's login status to True
-        session_state.logged_in = True
-    except auth.EmailNotFoundError:
-        # If the email is not found, display an error message
-        st.error("Email not found.")
-    except auth.InvalidPasswordError:
-        # If the password is invalid, display an error message
-        st.error("Invalid password.")
-    except auth.Error:
-        # If there is any other error, display an error message
-        st.error("An error occurred. Please try again.")
+    # Authentication success and warning messages
+    if 'auth_success' in st.session_state:
+        auth_notification.success(st.session_state.auth_success)
+        del st.session_state.auth_success
+    elif 'auth_warning' in st.session_state:
+        auth_notification.warning(st.session_state.auth_warning)
+        del st.session_state.auth_warning
 
-# Display the login status
-if session_state.logged_in:
-    st.success("Logged in successfully!")
-
-    # Display the authenticated member page
-    st.write("This is the authenticated member page.")
+## -------------------------------------------------------------------------------------------------
+## Logged in --------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 else:
-    st.info("Please log in to continue.")
+    # Show user information
+    st.header('User information:')
+    st.write(st.session_state.user_info)
 
+    # Sign out
+    st.header('Sign out:')
+    st.button(label='Sign Out',on_click=auth_functions.sign_out,type='primary')
+
+    # Delete Account
+    st.header('Delete account:')
+    password = st.text_input(label='Confirm your password',type='password')
+    st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
