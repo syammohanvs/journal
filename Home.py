@@ -16,6 +16,12 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 #     unsafe_allow_html=True,
 # )
 
+def run():
+    st.set_page_config(
+        page_title="T7 Journal",
+        page_icon="🏠",
+)
+    
 show_pages(
     [
         Page("pages/t7journal.py", "T7 Journal", "📚"),

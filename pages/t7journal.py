@@ -38,7 +38,7 @@ def run():
     show_pages(
         [
             Page("pages/t7journal.py", "T7 Journal", "📚"),
-            Page("Home", "Home","🏠"),
+            Page("Home.py", "Home","🏠"),
         ]
     )
 
