@@ -16,21 +16,36 @@ import datetime
 import requests
 import json
 import streamlit as st
+from st_pages import Page, show_pages, add_page_title
+import auth_functions
 
 from streamlit.logger import get_logger
 from dateutil import parser 
 from google.cloud import firestore
 from google.oauth2 import service_account
+from st_pages import Page, show_pages, add_page_title, hide_pages
+
+
 
 LOGGER = get_logger(__name__)
 
 def run():
     st.set_page_config(
         page_title="T7 Journal",
-        page_icon="👋",
+        page_icon="📚",
     )
 
-    st.title("T7 Journal")
+    show_pages(
+        [
+            Page("pages/t7journal.py", "T7 Journal", "📚"),
+            Page("Home", "Home","🏠"),
+        ]
+    )
+
+    st.columns(3)[1].title("T7 Journal")
+    if 'user_info' not in st.session_state:
+        st.warning("Please login to use the application")
+        st.stop()
 
     # st.sidebar.success("Select a demo above.")
 
@@ -45,51 +60,68 @@ def run():
         
         buylist = dict()
         selllist = dict()
-        tradelist = dict()
+        tradebuylist = dict()
+        tradeselllist = dict()
         index = 0
-        contract_in_list = False 
+        contract_in_list = False     
         
-        # for item in trade:
-        #     if "BUY" in item["transactionType"]: 
-        #         buylist = item
-        #         os_silver_netbuy = os_silver_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
-        #         overnight_silver_fut_qty = overnight_silver_fut_qty + int(item["tradedQuantity"])
-        #     if "SELL" in item["transactionType"]:
-        #         selllist = item
-        #         os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
-        #         overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
+        length = len(trade)
         
-        # if(selllist) :
-        #     for selltrade in selllist: 
-        #         for contract in tradelist: 
-        #             if (contract["customSymbol"] == selltrade["customSymbol"]) :
-        #                 netqty = int(selltrade["tradedQuantity"]) + int(contract["tradedQuantity"])                        
-        #                 tradelist[index]['ltp'] =  selltrade["tradedPrice"]
-        #                 tradelist[index]['tradeqty'] =  netqty
-        #                 tradelist[index]["ltt"] = selltrade["exchangeTime"]
-        #                 contract_in_list = True    
-        #         if(contract_in_list == False):
-        #             tradelist[index] = {'contract': selltrade["customSymbol"], 'ltp': selltrade["tradedPrice"], 'tradeqty': selltrade["tradedQuantity"], 'ltt':selltrade["exchangeTime"]}
-        #             contract_in_list = False
-        #             index = index + 1
-        # max_index = index
+        while(index < length):              
+            if "BUY" in trade[index].get("transactionType"): 
+                buylist[index] = trade[index]
+                # os_silver_netbuy = os_silver_netbuy +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+                # overnight_silver_fut_qty = overnight_silver_fut_qty + int(item["tradedQuantity"])
+            if "SELL" in trade[index].get("transactionType"):
+                selllist[index] = trade[index]
+                # os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
+                # overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
+            index = index + 1
+        
+        index = 0
+        length = len(selllist)
+        while(index < length): 
+            num_parsed_contracts = len(tradeselllist)
+            i = 0
+            while(True): 
+                
+                if(tradeselllist and i< num_parsed_contracts): 
+                    if (tradeselllist[i].get("contract") == selllist[index].get("customSymbol") ):
+                        netqty = selllist[index].get("tradedQuantity") + tradeselllist[i].get("tradeqty")                     
+                        tradeselllist[i]['ltp'] =  selllist[index].get("tradedPrice")
+                        tradeselllist[i]['tradeqty'] =  netqty
+                        tradeselllist[i]["ltt"] = selllist[index].get("exchangeTime")                        
+                        contract_in_list = True    
+                if(contract_in_list == False):
+                    tradeselllist[i]= {'contract': selllist[index].get("customSymbol"), 'ltp': selllist[index].get("tradedPrice"), 'tradeqty': selllist[index].get("tradedQuantity"), 'ltt':selllist[index].get("exchangeTime")}
+                    contract_in_list = False                    
+                    num_parsed_contracts = num_parsed_contracts + 1
+                    
+                if(i < num_parsed_contracts) :
+                    i = i + 1
+                    continue
+                else :
+                    break
+            index = index + 1
         # index = 0
         # if(buylist) :
         #     for buytrade in buylist: 
-        #         for contract in tradelist: 
+        #         for contract in tradebuylist: 
         #             if (contract["customSymbol"] == buytrade["customSymbol"]) :
-        #                 netqty = int(selltrade["tradedQuantity"]) - int(contract["tradedQuantity"])                        
-        #                 tradelist[index]['ltp'] =  selltrade["tradedPrice"]
-        #                 tradelist[index]['tradeqty'] =  netqty
-        #                 tradelist[index]["ltt"] = selltrade["exchangeTime"]
+        #                 netqty = int(buytrade["tradedQuantity"]) + int(contract["tradedQuantity"])                        
+        #                 tradebuylist[index]['ltp'] =  buytrade["tradedPrice"]
+        #                 tradebuylist[index]['tradeqty'] =  netqty
+        #                 tradebuylist[index]["ltt"] = buytrade["exchangeTime"]
         #                 contract_in_list = True    
         #         if(contract_in_list == False):
-        #             tradelist[index] = {'contract': buytrade["customSymbol"], 'ltp': buytrade["tradedPrice"], 'tradeqty': buytrade["tradedQuantity"], 'ltt':buytrade["exchangeTime"]}
+        #             tradebuylist[index] = {'contract': buytrade["customSymbol"], 'ltp': buytrade["tradedPrice"], 'tradeqty': buytrade["tradedQuantity"], 'ltt':buytrade["exchangeTime"]}
         #             contract_in_list = False
-        #             max_index = max_index + 1    
-                 
+        #             index = index + 1   
+        # st.write("buylist***************************************")
+        # st.write(buylist)
+        st.write("selllist***************************************")
+        st.write(tradeselllist)           
         
-        # if(buylist or selllist):            
         #     for buytrade in buylist:                            
         #         for selltrade in selllist :
         #             for contract in tradelist:                    
@@ -103,7 +135,8 @@ def run():
         #             else :
         #                 openpos[index] ={'contract': buytrade["customSymbol"], 'tradeval': str(selltrade["tradedPrice"] - buytrade["tradedPrice"]), 'tradeqty': str(selltrade["tradedQuantity"] - buytrade["tradedQuantity"])}
             
-            
+        a = dict()
+        return(a)    
         # else:
             
 
@@ -134,7 +167,7 @@ def run():
         
         while current_date <= end_date:
             urllink = "https://api.dhan.co/tradeHistory/"+ current_date.strftime("%Y-%m-%d") + "/" + current_date.strftime("%Y-%m-%d") + "/" + str(pagecount) + ""
-            myobj = {"Content-Type": "application/json", "access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzE3NDgxMzUxLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTAwMDU4MTQ2MCJ9.KIM6BqdHMgYpB8VVxm9KUEnxGd9rMV5Wn8ZLK2KQPgRTsX1Uo50u4TOuLtfKrFapUFgoUooelF7oOq940YD8jQ"}
+            myobj = {"Content-Type": "application/json", "access-token": token}
             x = requests.get(url = urllink, headers = myobj)
             data = json.loads(x.text)
         
@@ -256,7 +289,8 @@ def run():
                         if "SELL" in item["transactionType"]:
                             os_silver_netsell = os_silver_netsell +  (float(item["tradedPrice"]) * int(item["tradedQuantity"]))
                             overnight_silver_fut_qty = overnight_silver_fut_qty - int(item["tradedQuantity"])
-                        overnight_silver_fut_pos[silver_margin_count] = item                      
+                        overnight_silver_fut_pos[silver_margin_count] = item                     
+                        silver_margin_count = silver_margin_count + 1
                         os_silver_brokerage = os_silver_brokerage + float(item["brokerageCharges"])
                         os_silver_numtrades = os_silver_numtrades + 1
                         os_silver_charges = os_silver_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
@@ -397,20 +431,23 @@ def run():
         st.write(":blue[Net PnL -->] :green[" + str(net_pnl)+"]")
         st.write(":blue[Net PnL (%) -->] :green[" + str(round(((net_pnl / capital)*100),4))+"]")
        
-
     def save_setting():
         
-        db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
+        key_dict = json.loads(st.secrets["textkey"])
+        creds = service_account.Credentials.from_service_account_info(key_dict)
+        db = firestore.Client(credentials=creds, project="t7member-a7b8a")   
+        #db = firestore.Client.from_service_account_json("t7member-a7b8a-firebase-adminsdk-4j03p-6795a99ba1.json")
         doc_ref = db.collection('journal').document('WuaSwUfW0Ggbmzs2iSTW')
         doc_ref.set({
-            'userid': 't7support',
+            'userid': clientid,
             'capital': str(capital),
             'startdate': str(start_date),
             'enddate': str(end_date),
             'api_token': token
         })
 
-
+    def logout():
+        auth_functions.sign_out()
     
     #main
 
@@ -422,18 +459,19 @@ def run():
     doc = doc_ref.get().to_dict()
     
 
-    token = st.text_input("API Token")
-    clientid = st.text_input("Client ID")
+    token = st.text_input("API Token",value=doc["api_token"])
+    clientid = st.text_input("Client ID",value=doc["userid"])
     capital = st.number_input("Capital", min_value=0, max_value=None, value=int(doc["capital"]), step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
     start_date = st.date_input("Start Date", value = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date())
     end_date = st.date_input("End Date", value = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date())
-    st.button("Save", type="primary", on_click=save_setting) 
-    st.button("Compute", type="primary", on_click=click_button)    
-
-
-   
-
-
-
+    
+    [col1,col2,col3,col4] = st.columns(4)
+    with col2:
+        st.button("Save Settings", type="primary", on_click=save_setting,use_container_width=False) 
+    with col3:
+        st.button("Compute PnL", type="primary", on_click=click_button,use_container_width=False)   
+    st.button("Logout", type="primary", on_click=logout,use_container_width=True)    
+        
+ 
 if __name__ == "__main__":
     run()

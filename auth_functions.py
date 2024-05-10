@@ -3,6 +3,7 @@ import json
 import requests
 import streamlit as st
 
+
 ## -------------------------------------------------------------------------------------------------
 ## Firebase Auth API -------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -80,7 +81,7 @@ def sign_in(email:str, password:str) -> None:
 
         # Save user info to session state and rerun
         else:
-            st.session_state.user_info = user_info
+            st.session_state.user_info = user_info            
             #st.experimental_rerun()
            
 

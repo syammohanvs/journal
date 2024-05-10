@@ -1,11 +1,30 @@
 
 import streamlit as st
 import auth_functions
-from st_pages import hide_pages
+from st_pages import Page, show_pages, add_page_title, hide_pages
 
-st.columns(3)[1].header("T7 Journal")
+# st.set_page_config(initial_sidebar_state="collapsed")
 
-#st.title("T7 Journal")
+# st.markdown(
+#     """
+# <style>
+#     [data-testid="collapsedControl"] {
+#         display: none
+#     }
+# </style>
+# """,
+#     unsafe_allow_html=True,
+# )
+
+show_pages(
+    [
+        Page("pages/t7journal.py", "T7 Journal", "📚"),
+        Page("Home.py", "Home","🏠"),
+    ]
+)
+
+st.columns(3)[1].header("User Profile")
+
 ## -------------------------------------------------------------------------------------------------
 ## Not logged in -----------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -16,7 +35,7 @@ if 'user_info' not in st.session_state:
     auth_form = col2.form(key='Authentication form',clear_on_submit=False)
     email = auth_form.text_input(label='Email')
     password = auth_form.text_input(label='Password',type='password') if do_you_have_an_account in {'Yes','No'} else auth_form.empty()
-    auth_notification = col2.empty()
+    auth_notification = col2.empty()    
 
     # Sign In
     if do_you_have_an_account == 'Yes' and auth_form.form_submit_button(label='Sign In',use_container_width=True,type='primary'):
@@ -34,13 +53,16 @@ if 'user_info' not in st.session_state:
             auth_functions.reset_password(email)
 
     # Authentication success and warning messages
-    if 'auth_success' in st.session_state:
+    if 'auth_success' in st.session_state:       
         auth_notification.success(st.session_state.auth_success)
-        del st.session_state.auth_success
-        st.switch_page("pages/Hello.py")
+        del st.session_state.auth_success           
+        
     elif 'auth_warning' in st.session_state:
         auth_notification.warning(st.session_state.auth_warning)
         del st.session_state.auth_warning
+    
+    if 'user_info' in st.session_state:
+        st.rerun() 
 
 ## -------------------------------------------------------------------------------------------------
 ## Logged in --------------------------------------------------------------------------------------
@@ -57,4 +79,7 @@ else:
     # Delete Account
     st.header('Delete account:')
     password = st.text_input(label='Confirm your password',type='password')
-    st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
+    st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')    
+    # st.switch_page("pages/t7journal.py")
+
+
