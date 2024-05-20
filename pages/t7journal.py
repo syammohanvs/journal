@@ -20,6 +20,7 @@ from st_pages import Page, show_pages, add_page_title
 import auth_functions
 import time
 
+
 from streamlit.logger import get_logger
 from dateutil import parser 
 from google.cloud import firestore
@@ -36,7 +37,7 @@ def run():
     st.set_page_config(
         page_title="T7 Journal",
         page_icon="📚",
-        #layout="wide",
+        layout="wide",
     )
 
     show_pages(
@@ -55,6 +56,8 @@ def run():
     
     st.markdown("<p style='text-align: center; color: black;'>A tool to display trading profit and loss automatically based on user settings.<br>The tool is integrated with Dhan statement API only. So only Dhan users can use this tool.</p>",unsafe_allow_html=True)
     
+    def w_div(n, d):
+        return n / d if d else 0
 
     def get_open_trades(trade):
         
@@ -263,7 +266,7 @@ def run():
                 
                     if "BANKNIFTY" not in item["customSymbol"] and "FINNIFTY" not in item["customSymbol"] and "NIFTY" in item["customSymbol"] and "MARGIN" in item["productType"] :
                         strike = int(item["customSymbol"].split()[3])                        
-                        if (strike % 50 == 0 and strike % 100 != 0) or (item["tradedPrice"] < 100):
+                        if (strike % 50 == 0 and strike % 100 != 0) and (item["tradedPrice"] < 100):
                             if "BUY" in item["transactionType"]: 
                                 os_nifty_netbuy = os_nifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                             if "SELL" in item["transactionType"]:
@@ -370,84 +373,95 @@ def run():
         output["mtsm_grosspnl"] = mtsm_Grosspnl
         output["mtsm_charges"] =  mtsm_Chg 
         output["mtsm_netpnl"] =  mtsm_netpnl
-        output["mtsm_netpnl%"] = round((( mtsm_netpnl / capital)*100),4)
+        output["mtsm_netpnl%"] = round(w_div(mtsm_netpnl,capital)*100,4)        
         output["mtsm_brokerage"] = mtsm_brokerage
         output["mtsm_numtrades"] = mtsm_numtrades
         output["mtsm_netqty"] = mtsm_netqty
+        
         output["nts_nifty_grosspnl"] = nts_nifty_Grosspnl
         output["nts_nifty_charges"] =  nts_nifty_Chg 
-        output["nts_nifty_netpnl"] =  nts_nifty_netpnl
-        output["nts_nifty_netpnl%"] = round(((nts_nifty_netpnl / capital)*100),4)
+        output["nts_nifty_netpnl"] =  nts_nifty_netpnl        
+        output["nts_nifty_netpnl%"] = round(w_div(nts_nifty_netpnl,capital)*100,4)                            
         output["nts_nifty_brokerage"] = nts_nifty_brokerage
         output["nts_nifty_numtrades"] = nts_nifty_numtrades
         output["nts_nifty_netqty"] = nts_nifty_netqty
+        
         output["os_bankex_grosspnl"] = os_bankex_Grosspnl
         output["os_bankex_charges"] =  os_bankex_Chg 
-        output["os_bankex_netpnl"] = os_bankex_netpnl
-        output["os_bankex_netpnl%"] = round(((os_bankex_netpnl / capital)*100),4)
+        output["os_bankex_netpnl"] = os_bankex_netpnl       
+        output["os_bankex_netpnl%"] = round(w_div(os_bankex_netpnl,capital)*100,4)                 
         output["os_bankex_brokerage"] = os_bankex_brokerage
         output["os_bankex_numtrades"] = os_bankex_numtrades
         output["os_bankex_netqty"] = os_bankex_netqty
+        
         output["os_finnifty_grosspnl"] = os_finnifty_Grosspnl
         output["os_finnifty_charges"] =  os_finnifty_Chg 
         output["os_finnifty_netpnl"] = os_finnifty_netpnl
-        output["os_finnifty_netpnl%"] = round(((os_finnifty_netpnl / capital)*100),4)
+        output["os_finnifty_netpnl%"] = round(w_div(os_finnifty_netpnl,capital)*100,4)                        
         output["os_finnifty_brokerage"] = os_finnifty_brokerage
         output["os_finnifty_numtrades"] = os_finnifty_numtrades
         output["os_finnifty_netqty"] = os_finnifty_netqty
+        
         output["os_sensex_grosspnl"] = os_sensex_Grosspnl
         output["os_sensex_charges"] =  os_sensex_Chg 
-        output["os_sensex_netpnl"] = os_sensex_netpnl
-        output["os_sensex_netpnl%"] = round(((os_sensex_netpnl / capital)*100),4)
+        output["os_sensex_netpnl"] = os_sensex_netpnl        
+        output["os_sensex_netpnl%"] = round(w_div(os_sensex_netpnl,capital)*100,4)              
         output["os_sensex_brokerage"] = os_sensex_brokerage
         output["os_sensex_numtrades"] = os_sensex_numtrades 
         output["os_sensex_netqty"] = os_sensex_netqty
+        
         output["os_banknifty_grosspnl"] = os_banknifty_Grosspnl
         output["os_banknifty_charges"] =  os_banknifty_Chg 
         output["os_banknifty_netpnl"] = os_banknifty_netpnl
-        output["os_banknifty_netpnl%"] = round(((os_banknifty_netpnl / capital)*100),4)
+        output["os_banknifty_netpnl%"] = round(w_div(os_banknifty_netpnl,capital)*100,4)             
         output["os_banknifty_brokerage"] = os_banknifty_brokerage
         output["os_banknifty_numtrades"] = os_banknifty_numtrades 
         output["os_banknifty_netqty"] = os_banknifty_netqty
+        
         output["os_nifty_grosspnl"] = os_nifty_Grosspnl
         output["os_nifty_charges"] =  os_nifty_Chg 
         output["os_nifty_netpnl"] = os_nifty_netpnl
-        output["os_nifty_netpnl%"] = round(((os_nifty_netpnl / capital)*100),4)
+        output["os_nifty_netpnl%"] = round(w_div(os_nifty_netpnl,capital)*100,4)               
         output["os_nifty_brokerage"] = os_nifty_brokerage
         output["os_nifty_numtrades"] = os_nifty_numtrades 
         output["os_nifty_netqty"] = os_nifty_netqty  
+        
         output["dts_nifty_grosspnl"] = dts_nifty_Grosspnl
         output["dts_nifty_charges"] =  dts_nifty_Chg 
         output["dts_nifty_netpnl"] = dts_nifty_netpnl
-        output["dts_nifty_netpnl%"] = round(((dts_nifty_netpnl / capital)*100),4)
+        output["dts_nifty_netpnl%"] = round(w_div(dts_nifty_netpnl,capital)*100,4)        
         output["dts_nifty_brokerage"] = dts_nifty_brokerage
         output["dts_nifty_numtrades"] = dts_nifty_numtrades  
         output["dts_nifty_netqty"] = dts_nifty_netqty
+        
         output["dts_banknifty_grosspnl"] = dts_banknifty_Grosspnl
         output["dts_banknifty_charges"] = dts_banknifty_Chg
         output["dts_banknifty_netpnl"] = dts_banknifty_netpnl 
-        output["dts_banknifty_netpnl%"] = round(((dts_banknifty_netpnl / capital)*100),4)
+        output["dts_banknifty_netpnl%"] = round(w_div(dts_banknifty_netpnl,capital)*100,4)        
         output["dts_banknifty_brokerage"] = dts_banknifty_brokerage
         output["dts_banknifty_numtrades"] = dts_banknifty_numtrades  
         output["dts_banknifty_netqty"] = dts_banknifty_netqty
+        
         output["dts_finnifty_grosspnl"] = dts_finnifty_Grosspnl
         output["dts_finnifty_charges"] =  dts_finnifty_Chg 
-        output["dts_finnifty_netpnl"] = dts_finnifty_netpnl 
-        output["dts_finnifty_netpnl%"] = round(((dts_finnifty_netpnl / capital)*100),4)
+        output["dts_finnifty_netpnl"] = dts_finnifty_netpnl         
+        output["dts_finnifty_netpnl%"] = round(w_div(dts_finnifty_netpnl,capital)*100,4)            
         output["dts_finnifty_brokerage"] = dts_finnifty_brokerage
         output["dts_finnifty_numtrades"] = dts_finnifty_numtrades 
         output["dts_finnifty_netqty"] = dts_finnifty_netqty
+        
         output["cts_silverfut_grosspnl"] = cts_silverfut_Grosspnl
         output["cts_silverfut_charges"] =  cts_silverfut_Chg
         output["cts_silverfut_netpnl"] = cts_silverfut_netpnl 
-        output["cts_silverfut_netpnl%"] = round(((cts_silverfut_netpnl / capital)*100),4)
+        output["cts_silverfut_netpnl%"] = round(w_div(cts_silverfut_netpnl,capital)*100,4)             
         output["cts_silverfut_brokerage"] = cts_silverfut_brokerage
         output["cts_silverfut_numtrades"] = cts_silverfut_numtrades
         output["cts_silverfut_netqty"] = cts_silverfut_netqty
+        
         output["os_silver_grosspnl"] = os_silver_Grosspnl
         output["os_silver_charges"] =  os_silver_Chg 
         output["os_silver_netpnl"] = os_silver_netpnl
-        output["os_silver_netpnl%"] = round(((os_silver_netpnl / capital)*100),4)
+        output["os_silver_netpnl%"] = round(w_div(os_silver_netpnl,capital)*100,4)                
         output["os_silver_brokerage"] = os_silver_brokerage
         output["os_silver_numtrades"] = os_silver_numtrades 
         output["os_silver_netqty"] = os_silver_netqty        
@@ -611,10 +625,14 @@ def run():
                 pnl_row(round(net_pnl,2))
             with col6:
                 st.markdown("Net Profit %")
-                pnl_row(round(((net_pnl / capital)*100),4))   
+                if(capital > 0):
+                    pnl_row(round(((net_pnl / capital)*100),2))  
+                else:
+                    pnl_row(0)
         
+        st.write(w_div(data["dts_finnifty_netqty"],data["dts_finnifty_numtrades"]))
         pnl_block(title="Positional", name1="Nifty NTS",name2="",name3="",name4="",name5="",name6="",\
-        l1 = round(data["nts_nifty_netqty"]/data["nts_nifty_numtrades"]),l2 = 0,l3=0,l4=0,l5=0,l6=0,\
+        l1 = round(w_div(data["nts_nifty_netqty"],data["nts_nifty_numtrades"])),l2 = 0,l3=0,l4=0,l5=0,l6=0,\
         t1=data["nts_nifty_numtrades"],t2=0,t3=0,t4=0,t5=0,t6=0,\
         gp1=data["nts_nifty_grosspnl"],gp2=0,gp3=0,gp4=0,gp5=0,gp6=0,\
         chg1=data["nts_nifty_charges"],chg2=0,chg3=0,chg4=0,chg5=0,chg6=0,\
@@ -622,7 +640,7 @@ def run():
         npp1= data["nts_nifty_netpnl%"], npp2 = 0, npp3 = 0, npp4 = 0,npp5=0,npp6=0)         
         
         pnl_block(title="Intraday", name1="BankNifty MTS",name2="Nifty DTS",name3="BankNifty DTS",name4="FinNifty DTS",name5="",name6="",\
-        l1 = round(data["mtsm_netqty"]/data["mtsm_numtrades"]),l2 = round(data["dts_nifty_netqty"]/data["dts_nifty_numtrades"]),l3=round(data["dts_banknifty_netqty"]/data["dts_banknifty_numtrades"]),l4=round(data["dts_finnifty_netqty"]/data["dts_finnifty_numtrades"]),l5=0,l6=0,\
+        l1 = round(w_div(data["mtsm_netqty"],data["mtsm_numtrades"])),l2 = round(w_div(data["dts_nifty_netqty"],data["dts_nifty_numtrades"])),l3=round(w_div(data["dts_banknifty_netqty"],data["dts_banknifty_numtrades"])),l4=round(w_div(data["dts_finnifty_netqty"],data["dts_finnifty_numtrades"])),l5=0,l6=0,\
         t1=data["mtsm_numtrades"],t2=data["dts_nifty_numtrades"],t3=data["dts_banknifty_numtrades"],t4=data["dts_finnifty_numtrades"],t5=0,t6=0,\
         gp1=data["mtsm_grosspnl"],gp2=data["dts_nifty_grosspnl"],gp3=data["dts_banknifty_grosspnl"],gp4=data["dts_finnifty_grosspnl"],gp5=0,gp6=0,\
         chg1=data["mtsm_charges"],chg2=data["dts_nifty_charges"],chg3=data["dts_banknifty_charges"],chg4=data["dts_finnifty_charges"],chg5=0,chg6=0,\
@@ -630,7 +648,7 @@ def run():
         npp1= data["mtsm_netpnl%"], npp2 = data["dts_nifty_netpnl%"], npp3 = data["dts_banknifty_netpnl%"], npp4 = data["dts_finnifty_netpnl%"],npp5=0,npp6=0)
         
         pnl_block(title="Option Selling", name1="Bankex",name2="FinNifty",name3="BankNifty",name4="Nifty",name5="Sensex",name6="",\
-        l1 = round(data["os_bankex_netqty"]/data["os_bankex_numtrades"]),l2 = round(data["os_finnifty_netqty"]/data["os_finnifty_numtrades"]),l3=round(data["os_banknifty_netqty"]/data["os_banknifty_numtrades"]),l4=round(data["os_nifty_netqty"]/data["os_nifty_numtrades"]),l5=round(data["os_sensex_netqty"]/data["os_sensex_numtrades"]),l6=0,\
+        l1 = round(w_div(data["os_bankex_netqty"],data["os_bankex_numtrades"])),l2 = round(w_div(data["os_finnifty_netqty"],data["os_finnifty_numtrades"])),l3=round(w_div(data["os_banknifty_netqty"],data["os_banknifty_numtrades"])),l4=round(w_div(data["os_nifty_netqty"],data["os_nifty_numtrades"])),l5=round(w_div(data["os_sensex_netqty"],data["os_sensex_numtrades"])),l6=0,\
         t1=data["os_bankex_numtrades"],t2=data["os_finnifty_numtrades"],t3=data["os_banknifty_numtrades"],t4=data["os_nifty_numtrades"],t5=data["os_sensex_numtrades"],t6=0,\
         gp1=data["os_bankex_grosspnl"],gp2=data["os_finnifty_grosspnl"],gp3=data["os_banknifty_grosspnl"],gp4=data["os_nifty_grosspnl"],gp5=data["os_sensex_grosspnl"],gp6=0,\
         chg1=data["os_bankex_charges"],chg2=data["os_finnifty_charges"],chg3=data["os_banknifty_charges"],chg4=data["os_nifty_charges"],chg5=data["os_sensex_charges"],chg6=0,\
@@ -638,48 +656,24 @@ def run():
         npp1= data["os_bankex_netpnl%"], npp2 = data["os_finnifty_netpnl%"], npp3 = data["os_banknifty_netpnl%"], npp4 = data["os_nifty_netpnl%"],npp5=data["os_sensex_netpnl%"],npp6=0)
         
         pnl_block(title="Commodity", name1="Silver CTS",name2="Silver OS",name3="",name4="",name5="",name6="",\
-        l1 = round(data["cts_silverfut_netqty"]/data["cts_silverfut_numtrades"]),l2 = round(data["os_silver_netqty"]/data["os_silver_numtrades"]),l3=0,l4=0,l5=0,l6=0,\
+        l1 = round(w_div(data["cts_silverfut_netqty"],data["cts_silverfut_numtrades"])),l2 = round(w_div(data["os_silver_netqty"],data["os_silver_numtrades"])),l3=0,l4=0,l5=0,l6=0,\
         t1=data["cts_silverfut_numtrades"],t2 = data["os_silver_numtrades"],t3=0,t4=0,t5=0,t6=0,\
         gp1=data["cts_silverfut_grosspnl"],gp2=data["os_silver_grosspnl"],gp3=0,gp4=0,gp5=0,gp6=0,\
         chg1=data["cts_silverfut_charges"],chg2=data["os_silver_charges"],chg3=0,chg4=0,chg5=0,chg6=0,\
         np1= data["cts_silverfut_netpnl"], np2 = data["os_silver_netpnl"], np3 = 0, np4 = 0,np5=0,np6=0, \
-        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3 = 0, npp4 = 0,npp5=0,npp6=0)    
-        
+        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3 = 0, npp4 = 0,npp5=0,npp6=0)        
          
-        # st.write(":blue[Morning Blaster (BankNifty) --> Gross PnL -] :green[" + str(data["mtsm_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["mtsm_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["mtsm_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["mtsm_netpnl%"])+ "]")  
-        # st.write(":blue[OS (Bankex) --> Gross PnL -] :green[" + str(data["os_bankex_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_bankex_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_bankex_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_bankex_netpnl%"])+ "]")  
-        # st.write(":blue[OS (finnifty) --> Gross PnL -] :green[" + str(data["os_finnifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_finnifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_finnifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_finnifty_netpnl%"])+ "]")  
-        # st.write(":blue[OS (BankNifty) --> Gross PnL -] :green[" + str(data["os_banknifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_banknifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_banknifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_banknifty_netpnl%"])+ "]")  
-        # st.write(":blue[OS (Sensex) --> Gross PnL -] :green[" + str(data["os_sensex_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_sensex_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_sensex_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_sensex_netpnl%"])+ "]")  
-        # st.write(":blue[OS (Nifty) --> Gross PnL -] :green[" + str(data["os_nifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_nifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_nifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_nifty_netpnl%"])+ "]")  
-        # st.write(":blue[DTS (Nifty) --> Gross PnL -] :green[" + str(data["dts_nifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["dts_nifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["dts_nifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["dts_nifty_netpnl%"])+ "]")  
-        # st.write(":blue[DTS (BankNifty) --> Gross PnL -] :green[" + str(data["dts_banknifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["dts_banknifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["dts_banknifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["dts_banknifty_netpnl%"])+ "]")  
-        # st.write(":blue[DTS (FinNifty) --> Gross PnL -] :green[" + str(data["dts_finnifty_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["dts_finnifty_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["dts_finnifty_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["dts_finnifty_netpnl%"])+ "]")  
-        # st.write(":blue[CTS (Silver) --> Gross PnL -] :green[" + str(data["cts_silverfut_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["cts_silverfut_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["cts_silverfut_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["cts_silverfut_netpnl%"])+ "]")  
-        # st.write(":blue[OS (Silver) --> Gross PnL -] :green[" + str(data["os_silver_grosspnl"]) + "]    :blue[Charges -] :red[" + str(data["os_silver_charges"]) + "  "+  "]    :blue[Net PnL - ] :green[" + str(data["os_silver_netpnl"])+"]    :blue[Net PnL % - ] :green[" + str(data["os_silver_netpnl%"])+ "]")  
-        
-        # gross_pnl = data["mtsm_grosspnl"] + data["os_bankex_grosspnl"] + data["os_finnifty_grosspnl"]+ data["os_banknifty_grosspnl"]+ data["os_sensex_grosspnl"] + data["os_nifty_grosspnl"] + data["dts_nifty_grosspnl"] + data["dts_banknifty_grosspnl"] + data["dts_finnifty_grosspnl"] + data["cts_silverfut_grosspnl"] + data["os_silver_grosspnl"]
-        # brokerage = data["mtsm_brokerage"] + data["os_bankex_brokerage"] + data["os_finnifty_brokerage"] + data["os_banknifty_brokerage"] + data["os_nifty_brokerage"] + data["os_sensex_brokerage"] + data["dts_nifty_brokerage"] + data["dts_banknifty_brokerage"] + data["dts_finnifty_brokerage"] + data["cts_silverfut_brokerage"] + data["os_silver_brokerage"]
-        # charges = data["mtsm_charges"] + data["os_bankex_charges"] + data["os_finnifty_charges"] + data["os_banknifty_charges"] + data["os_nifty_charges"] + data["os_sensex_charges"] + data["dts_nifty_charges"] + data["dts_banknifty_charges"] + data["dts_finnifty_charges"] + data["cts_silverfut_charges"] + data["os_silver_charges"]
-        # net_pnl = data["mtsm_netpnl"] + data["os_bankex_netpnl"] + data["os_finnifty_netpnl"]+ data["os_banknifty_netpnl"]+ data["os_sensex_netpnl"] + data["os_nifty_netpnl"] + data["dts_nifty_netpnl"] + data["dts_banknifty_netpnl"] + data["dts_finnifty_netpnl"] + data["cts_silverfut_netpnl"] + data["os_silver_netpnl"]
-        # charges_less_brokerage = round(charges - brokerage,2)
-
-        # st.write(":blue[Total Trades -->] :blue[" + str(data["os_banknifty_numtrades"] + data["os_bankex_numtrades"] + data["os_sensex_numtrades"] +  data["os_finnifty_numtrades"] + data["mtsm_numtrades"] + data["os_nifty_numtrades"] + data["dts_nifty_numtrades"] + data["dts_banknifty_numtrades"] + data["dts_finnifty_numtrades"] + data["cts_silverfut_numtrades"] + data["os_silver_numtrades"])+"]")
-        # st.write(":blue[Charges -->] :red[" + str(charges_less_brokerage)+"]")
-        # st.write(":blue[Brokerage -->] :red[" + str(round(brokerage,4))+"]")
-        # st.write(":blue[Net PnL -->] :green[" + str(net_pnl)+"]")
-        # st.write(":blue[Net PnL (%) -->] :green[" + str(round(((net_pnl / capital)*100),4))+"]")
-       
-    def save_setting():              
-        
+              
+    def save_setting():          
+    
         msg = st.toast(":green[Updating Database with your new settings]")       
+        
         doc_ref.set({
-            'userid': clientid,
-            'capital': str(capital),
-            'startdate': str(start_date),
-            'enddate': str(end_date),
-            'api_token': token,
-            'email'    : st.session_state.user_info.get("email")
+            'userid': st.session_state["clientid_val"],
+            'capital': st.session_state["capital_val"],
+            'startdate': str(st.session_state["sd_val"]),
+            'enddate': str(st.session_state["ed_val"]),
+            'api_token': st.session_state["token_val"]            
         })
         time.sleep(1)
         msg.toast(":green[Settings Updated]")
@@ -687,7 +681,7 @@ def run():
         # time.sleep(1) # Wait for 3 seconds
         # msg.empty() # Clear the alert
         
-
+          
     def logout():
         auth_functions.sign_out()
     
@@ -697,28 +691,35 @@ def run():
     creds = service_account.Credentials.from_service_account_info(key_dict)
     db = firestore.Client(credentials=creds, project="t7member-a7b8a")   
     doc_ref = db.collection('journal').document(st.session_state.user_info.get("email"))
+   
     doc = doc_ref.get().to_dict()   
+   
+    token_val = ""
+    clientid_val=""
+    capital_val = 100000
+    sd_val = datetime.date.today() - datetime.timedelta(days=30)
+    ed_val = datetime.date.today()
     
-    if not doc:
-        token = st.text_input("API Token",value="",help="Enter DhanHq API Token")
-        clientid = st.text_input("Client ID",value="",help="Enter Dhan Client ID")
-        capital = st.number_input("Capital", min_value=0, max_value=None, value=100000, step=1, help="Enter your trading capital", disabled=False, label_visibility="visible")
-        start_date = st.date_input("Start Date", value = datetime.datetime.today() - datetime.timedelta(days=30), help="Journal report start date")
-        end_date = st.date_input("End Date", value = datetime.datetime.today(), help="Journal report end date")
+    if not doc:         
         doc_ref.set({
-            'userid': clientid,
-            'capital': str(capital),
-            'startdate': str(start_date),
-            'enddate': str(end_date),
-            'api_token': token,            
-        })       
+            'userid': clientid_val,
+            'capital': capital_val,
+            'startdate': str(sd_val),
+            'enddate': str(ed_val),
+            'api_token': token_val           
+        }) 
     else:
-        token = st.text_input("API Token",value=doc["api_token"])
-        clientid = st.text_input("Client ID",value=doc["userid"])
-        capital = st.number_input("Capital", min_value=0, max_value=None, value=int(doc["capital"]), step=1, help="Enter trading capital", disabled=False, label_visibility="visible")
-        start_date = st.date_input("Start Date", value = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date())
-        end_date = st.date_input("End Date", value = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date())
-        
+        token_val = doc["api_token"]
+        clientid_val = doc["userid"]
+        capital_val = doc["capital"]
+        sd_val = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date()
+        ed_val = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date()
+    
+    token = st.text_input("API Token",value = token_val,key = "token_val")
+    clientid = st.text_input("Client ID",value= clientid_val,key = "clientid_val")
+    capital = st.number_input("Capital", min_value= 0, max_value=None, value=capital_val, step=1, help="Enter trading capital", disabled=False, label_visibility="visible",key="capital_val")
+    start_date = st.date_input("Start Date", value = sd_val,key = "sd_val")
+    end_date = st.date_input("End Date", value = ed_val,key = "ed_val")        
        
     
     [col1,col2,col3,col4] = st.columns(4)

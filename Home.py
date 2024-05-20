@@ -21,6 +21,7 @@ def run():
     st.set_page_config(
         page_title="T7 Journal",
         page_icon="🏠",
+        layout="centered",
 )
     
 show_pages(
@@ -73,7 +74,8 @@ if 'user_info' not in st.session_state:
 ## -------------------------------------------------------------------------------------------------
 ## Logged in --------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-else:
+else:    
+    
     # Show user information
     st.header('User Profile',divider="blue")
     with st.container(border=False):        
