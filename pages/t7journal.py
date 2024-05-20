@@ -500,7 +500,7 @@ def run():
     def pnl_block(title,name1,name2,name3,name4,name5,name6,l1,l2,l3,l4,l5,l6,t1,t2,t3,t4,t5,t6,gp1,gp2,gp3,gp4,gp5,gp6,chg1,chg2,chg3,chg4,chg5,chg6,np1,np2,np3,np4,np5,np6,npp1,npp2,npp3,npp4,npp5,npp6):
         if title:
             
-            plot_title(title, size = 3, color = "#1D9AE2")
+            plot_title(title, size = 3, color = "black")
                         
             with st.container(border=True):        
                 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
@@ -619,7 +619,7 @@ def run():
         
         plot_title("PnL Report - " + str(start_date) + " to " + str(end_date) + "",size = 2, color = "#1D9AE2")
         
-        plot_title("Total",size = 2, color = "#1D9AE2")
+        plot_title("Total",size = 2, color = "blue")
 
         with st.container(border=True):        
             col1, col2, col3, col4, col5, col6 = st.columns(6)
