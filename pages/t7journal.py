@@ -47,7 +47,7 @@ def run():
         ]
     )
 
-    st.markdown("<h1 style='text-align: center; color: black;'>T7 Journal</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #1D9AE2;'>T7 Journal</h1>", unsafe_allow_html=True)
     if 'user_info' not in st.session_state:
         st.warning("Please login to use the application")
         st.stop()
@@ -500,7 +500,7 @@ def run():
     def pnl_block(title,name1,name2,name3,name4,name5,name6,l1,l2,l3,l4,l5,l6,t1,t2,t3,t4,t5,t6,gp1,gp2,gp3,gp4,gp5,gp6,chg1,chg2,chg3,chg4,chg5,chg6,np1,np2,np3,np4,np5,np6,npp1,npp2,npp3,npp4,npp5,npp6):
         if title:
             
-            plot_title(title, size = 3, color = "black")
+            plot_title(title, size = 3, color = "#1D9AE2")
                         
             with st.container(border=True):        
                 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
@@ -617,9 +617,9 @@ def run():
         net_pnl = data["mtsm_netpnl"] + data["nts_nifty_netpnl"] + data["os_bankex_netpnl"] + data["os_finnifty_netpnl"]+ data["os_banknifty_netpnl"]+ data["os_sensex_netpnl"] + data["os_nifty_netpnl"] + data["dts_nifty_netpnl"] + data["dts_banknifty_netpnl"] + data["dts_finnifty_netpnl"] + data["cts_silverfut_netpnl"] + data["os_silver_netpnl"]
         charges_less_brokerage = round(charges - brokerage,2)
         
-        plot_title("PnL Report - " + str(start_date) + " to " + str(end_date) + "",size = 2, color = "black")
+        plot_title("PnL Report - " + str(start_date) + " to " + str(end_date) + "",size = 2, color = "#1D9AE2")
         
-        plot_title("Total",size = 2, color = "black")
+        plot_title("Total",size = 2, color = "#1D9AE2")
 
         with st.container(border=True):        
             col1, col2, col3, col4, col5, col6 = st.columns(6)
