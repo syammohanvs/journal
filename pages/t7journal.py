@@ -229,9 +229,9 @@ def run():
                             os_bankex_netbuy = os_bankex_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                         if "SELL" in item["transactionType"]:
                             os_bankex_netsell = os_bankex_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                        os_bankex_netqty = os_bankex_netqty + item["tradedQuantity"]
-                        os_bankex_brokerage = os_bankex_brokerage + float(item["brokerageCharges"])
-                        os_bankex_numtrades =  os_bankex_numtrades + 1
+                            os_bankex_numtrades =  os_bankex_numtrades + 1
+                            os_bankex_netqty = os_bankex_netqty + item["tradedQuantity"]
+                        os_bankex_brokerage = os_bankex_brokerage + float(item["brokerageCharges"])                        
                         os_bankex_charges = os_bankex_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                     
                     if "FINNIFTY" in item["customSymbol"] and "MARGIN" in item["productType"]:
@@ -239,9 +239,9 @@ def run():
                             os_finnifty_netbuy = os_finnifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                         if "SELL" in item["transactionType"]:
                             os_finnifty_netsell = os_finnifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                        os_finnifty_netqty = os_finnifty_netqty + item["tradedQuantity"]
-                        os_finnifty_brokerage = os_finnifty_brokerage + float(item["brokerageCharges"])
-                        os_finnifty_numtrades = os_finnifty_numtrades + 1
+                            os_finnifty_netqty = os_finnifty_netqty + item["tradedQuantity"]
+                            os_finnifty_numtrades =  os_finnifty_numtrades + 1
+                        os_finnifty_brokerage = os_finnifty_brokerage + float(item["brokerageCharges"])                        
                         os_finnifty_charges = os_finnifty_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                 
                     if "SENSEX" in item["customSymbol"] :
@@ -249,9 +249,9 @@ def run():
                             os_sensex_netbuy = os_sensex_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                         if "SELL" in item["transactionType"]:
                             os_sensex_netsell = os_sensex_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                        os_sensex_netqty = os_finnifty_netqty + item["tradedQuantity"]
-                        os_sensex_brokerage = os_sensex_brokerage + float(item["brokerageCharges"])
-                        os_sensex_numtrades = os_sensex_numtrades + 1
+                            os_sensex_netqty = os_finnifty_netqty + item["tradedQuantity"]
+                            os_sensex_numtrades = os_sensex_numtrades + 1
+                        os_sensex_brokerage = os_sensex_brokerage + float(item["brokerageCharges"])                        
                         os_sensex_charges = os_sensex_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                     
                     if "BANKNIFTY" in item["customSymbol"] and "MARGIN" in item["productType"] :
@@ -259,9 +259,9 @@ def run():
                             os_banknifty_netbuy = os_banknifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                         if "SELL" in item["transactionType"]:
                             os_banknifty_netsell = os_banknifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                        os_banknifty_netqty = os_banknifty_netqty + item["tradedQuantity"]
-                        os_banknifty_brokerage = os_banknifty_brokerage + float(item["brokerageCharges"])
-                        os_banknifty_numtrades = os_banknifty_numtrades + 1
+                            os_banknifty_netqty = os_banknifty_netqty + item["tradedQuantity"]
+                            os_banknifty_numtrades = os_banknifty_numtrades + 1
+                        os_banknifty_brokerage = os_banknifty_brokerage + float(item["brokerageCharges"])                        
                         os_banknifty_charges = os_banknifty_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                 
                     if "BANKNIFTY" not in item["customSymbol"] and "FINNIFTY" not in item["customSymbol"] and "NIFTY" in item["customSymbol"] and "MARGIN" in item["productType"] :
@@ -271,20 +271,21 @@ def run():
                                 os_nifty_netbuy = os_nifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                             if "SELL" in item["transactionType"]:
                                 os_nifty_netsell = os_nifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                            os_nifty_netqty = os_nifty_netqty + item["tradedQuantity"]
-                            os_nifty_brokerage = os_nifty_brokerage + float(item["brokerageCharges"])
-                            os_nifty_numtrades = os_nifty_numtrades + 1
+                                os_nifty_netqty = os_nifty_netqty + item["tradedQuantity"]
+                                os_nifty_numtrades = os_nifty_numtrades + 1
+                            os_nifty_brokerage = os_nifty_brokerage + float(item["brokerageCharges"])                            
                             os_nifty_charges = os_nifty_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                         else:
                             if "BUY" in item["transactionType"]: 
                                 nts_nifty_netbuy =  nts_nifty_netbuy + item["tradedPrice"] * item["tradedQuantity"]
                             if "SELL" in item["transactionType"]:
                                 nts_nifty_netsell =  nts_nifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
+                                nts_nifty_netqty = nts_nifty_netqty + item["tradedQuantity"]
+                                nts_nifty_numtrades = nts_nifty_numtrades + 1
                             overnight_nts_pos[nifty_nts_count] = item                    
                             nifty_nts_count= nifty_nts_count + 1                            
-                            nts_nifty_netqty = nts_nifty_netqty + item["tradedQuantity"]
-                            nts_nifty_brokerage = nts_nifty_brokerage + float(item["brokerageCharges"])
-                            nts_nifty_numtrades = nts_nifty_numtrades + 1
+                            
+                            nts_nifty_brokerage = nts_nifty_brokerage + float(item["brokerageCharges"])                            
                             nts_nifty_charges = nts_nifty_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                                          
                     if "SILVER" in item["customSymbol"] and "FUTCOM" in item["instrument"]:                        
@@ -312,13 +313,14 @@ def run():
                         if "BUY" in item["transactionType"]: 
                             os_silver_netbuy = os_silver_netbuy +  item["tradedPrice"] * item["tradedQuantity"]                                             
                         if "SELL" in item["transactionType"]:
-                            os_silver_netsell = os_silver_netsell +  item["tradedPrice"] * item["tradedQuantity"]                               
+                            os_silver_netsell = os_silver_netsell +  item["tradedPrice"] * item["tradedQuantity"]   
+                            os_silver_numtrades = os_silver_numtrades + 1  
+                            os_silver_netqty = os_silver_netqty + item["tradedQuantity"]                          
                         overnight_silver_opt_pos[silver_opt_count] = item                  
                         silver_opt_count = silver_opt_count + 1
-                        os_silver_brokerage = os_silver_brokerage + float(item["brokerageCharges"])
-                        os_silver_numtrades = os_silver_numtrades + 1
+                        os_silver_brokerage = os_silver_brokerage + float(item["brokerageCharges"])                        
                         os_silver_charges = os_silver_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
-                        os_silver_netqty = os_silver_netqty + item["tradedQuantity"]
+                        
                 pagecount = pagecount + 1            
         
         mtsm_Grosspnl = round((mtsm_netsell - mtsm_netbuy),2)

@@ -19,9 +19,9 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 
 def run():
     st.set_page_config(
-        page_title="T7 Journal",
+        page_title="Home",
         page_icon="🏠",
-        layout="centered",
+        layout="wide",
 )
     
 show_pages(
