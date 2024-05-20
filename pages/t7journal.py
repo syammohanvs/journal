@@ -249,7 +249,7 @@ def run():
                             os_sensex_netbuy = os_sensex_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                         if "SELL" in item["transactionType"]:
                             os_sensex_netsell = os_sensex_netsell +  item["tradedPrice"] * item["tradedQuantity"]
-                            os_sensex_netqty = os_finnifty_netqty + item["tradedQuantity"]
+                            os_sensex_netqty = os_sensex_netqty + item["tradedQuantity"]
                             os_sensex_numtrades = os_sensex_numtrades + 1
                         os_sensex_brokerage = os_sensex_brokerage + float(item["brokerageCharges"])                        
                         os_sensex_charges = os_sensex_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
@@ -632,7 +632,6 @@ def run():
                 else:
                     pnl_row(0)
         
-        st.write(w_div(data["dts_finnifty_netqty"],data["dts_finnifty_numtrades"]))
         pnl_block(title="Positional", name1="Nifty NTS",name2="",name3="",name4="",name5="",name6="",\
         l1 = round(w_div(data["nts_nifty_netqty"],data["nts_nifty_numtrades"])),l2 = 0,l3=0,l4=0,l5=0,l6=0,\
         t1=data["nts_nifty_numtrades"],t2=0,t3=0,t4=0,t5=0,t6=0,\
