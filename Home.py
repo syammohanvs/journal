@@ -20,14 +20,14 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 def run():
     st.set_page_config(
         page_title="Home",
-        page_icon="🏠",
-        layout="wide",
+        page_icon="🛋️",
+        # layout="wide",
 )
     
 show_pages(
     [
-        Page("pages/t7journal.py", "T7 Journal", "📚"),
-        Page("Home.py", "Home","🏠"),
+        Page("pages/t7journal.py", "T7 Journal", "📘"),
+        Page("Home.py", "Home","🛋️"),
     ]
 )
 

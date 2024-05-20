@@ -36,14 +36,14 @@ LOGGER = get_logger(__name__)
 def run():
     st.set_page_config(
         page_title="T7 Journal",
-        page_icon="📚",
-        layout="wide",
+        page_icon="📘",
+        # layout="wide",
     )
 
     show_pages(
         [
-            Page("pages/t7journal.py", "T7 Journal", "📚"),
-            Page("Home.py", "Home","🏠"),
+            Page("pages/t7journal.py", "T7 Journal", "📘"),
+            Page("Home.py", "Home","🛋️"),
         ]
     )
 
@@ -141,17 +141,18 @@ def run():
         
         mtsm_netbuy =  mtsm_netsell =  mtsm_charges = mtsm_brokerage = mtsm_numtrades = mtsm_netqty = 0
         nts_nifty_netbuy =  nts_nifty_netsell =  nts_nifty_charges = nts_nifty_brokerage = nts_nifty_numtrades = nts_nifty_netqty = 0
-        os_bankex_netbuy = os_bankex_netsell = os_bankex_charges = os_bankex_brokerage = os_bankex_numtrades = os_bankex_netqty = 0
-        os_sensex_netbuy = os_sensex_netsell = os_sensex_charges = os_sensex_brokerage = os_sensex_numtrades = os_sensex_netqty = 0
-        os_banknifty_netbuy = os_banknifty_netsell = os_banknifty_charges = os_banknifty_brokerage = os_banknifty_numtrades = os_banknifty_netqty = 0
-        os_finnifty_netbuy = os_finnifty_netsell = os_finnifty_charges = os_finnifty_brokerage = os_finnifty_numtrades = os_finnifty_netqty = 0
-        os_nifty_netbuy = os_nifty_netsell = os_nifty_charges = os_nifty_brokerage = os_nifty_numtrades = os_nifty_netqty = 0
+        os_bankex_netbuy = os_bankex_netsell = os_bankex_charges = os_bankex_brokerage = os_bankex_numtrades = os_bankex_netqty = os_bankex_buytrades = 0
+        os_sensex_netbuy = os_sensex_netsell = os_sensex_charges = os_sensex_brokerage = os_sensex_numtrades = os_sensex_netqty = os_sensex_buytrades = 0
+        os_banknifty_netbuy = os_banknifty_netsell = os_banknifty_charges = os_banknifty_brokerage = os_banknifty_numtrades = os_banknifty_netqty = os_banknifty_buytrades = 0
+        os_finnifty_netbuy = os_finnifty_netsell = os_finnifty_charges = os_finnifty_brokerage = os_finnifty_numtrades = os_finnifty_netqty = os_finnifty_buytrades = 0
+        os_nifty_netbuy = os_nifty_netsell = os_nifty_charges = os_nifty_brokerage = os_nifty_numtrades = os_nifty_netqty = os_nifty_buytrades = 0
         dts_nifty_netbuy = dts_nifty_netsell = dts_nifty_charges = dts_nifty_brokerage = dts_nifty_numtrades = dts_nifty_netqty = 0
         dts_banknifty_netbuy = dts_banknifty_netsell = dts_banknifty_charges = dts_banknifty_brokerage = dts_banknifty_numtrades = dts_banknifty_netqty = 0
         dts_finnifty_netbuy = dts_finnifty_netsell = dts_finnifty_charges = dts_finnifty_brokerage = dts_finnifty_numtrades = dts_finnifty_netqty = 0
         cts_silverfut_netbuy = cts_silverfut_netsell = cts_silverfut_charges = cts_silverfut_brokerage = cts_silverfut_numtrades = cts_silverfut_netqty = 0 
-        os_silver_netbuy = os_silver_netsell = os_silver_charges = os_silver_brokerage = os_silver_numtrades = os_silver_netqty = 0 
+        os_silver_netbuy = os_silver_netsell = os_silver_charges = os_silver_brokerage = os_silver_numtrades = os_silver_netqty = os_silver_buytrades = 0 
         
+
         overnight_silver_fut_pos = dict()
         overnight_silver_fut_qty = 0
         overnight_silver_intrafut_pos = dict()
@@ -227,6 +228,7 @@ def run():
                     if "BANKEX" in item["customSymbol"] :
                         if "BUY" in item["transactionType"]: 
                             os_bankex_netbuy = os_bankex_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
+                            os_bankex_buytrades =  os_bankex_buytrades + 1
                         if "SELL" in item["transactionType"]:
                             os_bankex_netsell = os_bankex_netsell +  item["tradedPrice"] * item["tradedQuantity"]
                             os_bankex_numtrades =  os_bankex_numtrades + 1
@@ -237,6 +239,7 @@ def run():
                     if "FINNIFTY" in item["customSymbol"] and "MARGIN" in item["productType"]:
                         if "BUY" in item["transactionType"]: 
                             os_finnifty_netbuy = os_finnifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
+                            os_finnifty_buytrades = os_finnifty_buytrades + 1
                         if "SELL" in item["transactionType"]:
                             os_finnifty_netsell = os_finnifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
                             os_finnifty_netqty = os_finnifty_netqty + item["tradedQuantity"]
@@ -247,6 +250,7 @@ def run():
                     if "SENSEX" in item["customSymbol"] :
                         if "BUY" in item["transactionType"]: 
                             os_sensex_netbuy = os_sensex_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
+                            os_sensex_buytrades = os_sensex_buytrades + 1
                         if "SELL" in item["transactionType"]:
                             os_sensex_netsell = os_sensex_netsell +  item["tradedPrice"] * item["tradedQuantity"]
                             os_sensex_netqty = os_sensex_netqty + item["tradedQuantity"]
@@ -257,6 +261,7 @@ def run():
                     if "BANKNIFTY" in item["customSymbol"] and "MARGIN" in item["productType"] :
                         if "BUY" in item["transactionType"]: 
                             os_banknifty_netbuy = os_banknifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
+                            os_banknifty_buytrades = os_banknifty_buytrades + 1
                         if "SELL" in item["transactionType"]:
                             os_banknifty_netsell = os_banknifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
                             os_banknifty_netqty = os_banknifty_netqty + item["tradedQuantity"]
@@ -269,6 +274,7 @@ def run():
                         if (strike % 50 == 0 and strike % 100 != 0) and (item["tradedPrice"] < 100):
                             if "BUY" in item["transactionType"]: 
                                 os_nifty_netbuy = os_nifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
+                                os_nifty_buytrades = os_nifty_buytrades + 1
                             if "SELL" in item["transactionType"]:
                                 os_nifty_netsell = os_nifty_netsell +  item["tradedPrice"] * item["tradedQuantity"]
                                 os_nifty_netqty = os_nifty_netqty + item["tradedQuantity"]
@@ -312,6 +318,7 @@ def run():
                     if "SILVER" in item["customSymbol"] and "OPTFUT" in item["instrument"]:                       
                         if "BUY" in item["transactionType"]: 
                             os_silver_netbuy = os_silver_netbuy +  item["tradedPrice"] * item["tradedQuantity"]                                             
+                            os_silver_buytrades = os_silver_buytrades + 1
                         if "SELL" in item["transactionType"]:
                             os_silver_netsell = os_silver_netsell +  item["tradedPrice"] * item["tradedQuantity"]   
                             os_silver_numtrades = os_silver_numtrades + 1  
@@ -378,7 +385,7 @@ def run():
         output["mtsm_netpnl%"] = round(w_div(mtsm_netpnl,capital)*100,4)        
         output["mtsm_brokerage"] = mtsm_brokerage
         output["mtsm_numtrades"] = mtsm_numtrades
-        output["mtsm_netqty"] = mtsm_netqty
+        output["mtsm_netqty"] = mtsm_netqty        
         
         output["nts_nifty_grosspnl"] = nts_nifty_Grosspnl
         output["nts_nifty_charges"] =  nts_nifty_Chg 
@@ -395,6 +402,7 @@ def run():
         output["os_bankex_brokerage"] = os_bankex_brokerage
         output["os_bankex_numtrades"] = os_bankex_numtrades
         output["os_bankex_netqty"] = os_bankex_netqty
+        output["os_bankex_buytrades"] = os_bankex_buytrades
         
         output["os_finnifty_grosspnl"] = os_finnifty_Grosspnl
         output["os_finnifty_charges"] =  os_finnifty_Chg 
@@ -403,6 +411,7 @@ def run():
         output["os_finnifty_brokerage"] = os_finnifty_brokerage
         output["os_finnifty_numtrades"] = os_finnifty_numtrades
         output["os_finnifty_netqty"] = os_finnifty_netqty
+        output["os_finnifty_buytrades"] = os_finnifty_buytrades
         
         output["os_sensex_grosspnl"] = os_sensex_Grosspnl
         output["os_sensex_charges"] =  os_sensex_Chg 
@@ -411,6 +420,7 @@ def run():
         output["os_sensex_brokerage"] = os_sensex_brokerage
         output["os_sensex_numtrades"] = os_sensex_numtrades 
         output["os_sensex_netqty"] = os_sensex_netqty
+        output["os_sensex_buytrades"] = os_sensex_buytrades
         
         output["os_banknifty_grosspnl"] = os_banknifty_Grosspnl
         output["os_banknifty_charges"] =  os_banknifty_Chg 
@@ -419,6 +429,7 @@ def run():
         output["os_banknifty_brokerage"] = os_banknifty_brokerage
         output["os_banknifty_numtrades"] = os_banknifty_numtrades 
         output["os_banknifty_netqty"] = os_banknifty_netqty
+        output["os_banknifty_buytrades"] = os_banknifty_buytrades
         
         output["os_nifty_grosspnl"] = os_nifty_Grosspnl
         output["os_nifty_charges"] =  os_nifty_Chg 
@@ -426,7 +437,8 @@ def run():
         output["os_nifty_netpnl%"] = round(w_div(os_nifty_netpnl,capital)*100,4)               
         output["os_nifty_brokerage"] = os_nifty_brokerage
         output["os_nifty_numtrades"] = os_nifty_numtrades 
-        output["os_nifty_netqty"] = os_nifty_netqty  
+        output["os_nifty_netqty"] = os_nifty_netqty
+        output["os_nifty_buytrades"] = os_nifty_buytrades
         
         output["dts_nifty_grosspnl"] = dts_nifty_Grosspnl
         output["dts_nifty_charges"] =  dts_nifty_Chg 
@@ -466,7 +478,8 @@ def run():
         output["os_silver_netpnl%"] = round(w_div(os_silver_netpnl,capital)*100,4)                
         output["os_silver_brokerage"] = os_silver_brokerage
         output["os_silver_numtrades"] = os_silver_numtrades 
-        output["os_silver_netqty"] = os_silver_netqty        
+        output["os_silver_netqty"] = os_silver_netqty 
+        output["os_silver_buytrades"] = os_silver_buytrades             
         
         return(output)       
     
@@ -596,7 +609,8 @@ def run():
 
         data = mtsm_pnl()         
         
-        tot_trades = data["nts_nifty_numtrades"] + data["os_banknifty_numtrades"] + data["os_bankex_numtrades"] + data["os_sensex_numtrades"] +  data["os_finnifty_numtrades"] + data["mtsm_numtrades"] + data["os_nifty_numtrades"] + data["dts_nifty_numtrades"] + data["dts_banknifty_numtrades"] + data["dts_finnifty_numtrades"] + data["cts_silverfut_numtrades"] + data["os_silver_numtrades"]
+        tot_trades = data["nts_nifty_numtrades"] + data["os_banknifty_numtrades"] + data["os_banknifty_buytrades"] + data["os_bankex_numtrades"] +  data["os_bankex_buytrades"] + data["os_sensex_numtrades"] +  data["os_sensex_buytrades"] + data["os_finnifty_numtrades"] + data["os_finnifty_buytrades"] + data["mtsm_numtrades"] + data["os_nifty_numtrades"] + data["os_nifty_buytrades"] + data["dts_nifty_numtrades"] + data["dts_banknifty_numtrades"] + data["dts_finnifty_numtrades"] + data["cts_silverfut_numtrades"] + data["os_silver_numtrades"] + data["os_silver_buytrades"]
+        gross_pnl = data["mtsm_grosspnl"] + data["nts_nifty_grosspnl"] + data["os_bankex_grosspnl"] + data["os_finnifty_grosspnl"]+ data["os_banknifty_grosspnl"]+ data["os_sensex_grosspnl"] + data["os_nifty_grosspnl"] + data["dts_nifty_grosspnl"] + data["dts_banknifty_grosspnl"] + data["dts_finnifty_grosspnl"] + data["cts_silverfut_grosspnl"] + data["os_silver_grosspnl"]
         gross_pnl = data["mtsm_grosspnl"] + data["nts_nifty_grosspnl"] + data["os_bankex_grosspnl"] + data["os_finnifty_grosspnl"]+ data["os_banknifty_grosspnl"]+ data["os_sensex_grosspnl"] + data["os_nifty_grosspnl"] + data["dts_nifty_grosspnl"] + data["dts_banknifty_grosspnl"] + data["dts_finnifty_grosspnl"] + data["cts_silverfut_grosspnl"] + data["os_silver_grosspnl"]
         brokerage = data["mtsm_brokerage"] + data["nts_nifty_brokerage"] + data["os_bankex_brokerage"] + data["os_finnifty_brokerage"] + data["os_banknifty_brokerage"] + data["os_nifty_brokerage"] + data["os_sensex_brokerage"] + data["dts_nifty_brokerage"] + data["dts_banknifty_brokerage"] + data["dts_finnifty_brokerage"] + data["cts_silverfut_brokerage"] + data["os_silver_brokerage"]
         charges = data["mtsm_charges"] + data["nts_nifty_charges"] + data["os_bankex_charges"] + data["os_finnifty_charges"] + data["os_banknifty_charges"] + data["os_nifty_charges"] + data["os_sensex_charges"] + data["dts_nifty_charges"] + data["dts_banknifty_charges"] + data["dts_finnifty_charges"] + data["cts_silverfut_charges"] + data["os_silver_charges"]
@@ -650,7 +664,7 @@ def run():
         
         pnl_block(title="Option Selling", name1="Bankex",name2="FinNifty",name3="BankNifty",name4="Nifty",name5="Sensex",name6="",\
         l1 = round(w_div(data["os_bankex_netqty"],data["os_bankex_numtrades"])),l2 = round(w_div(data["os_finnifty_netqty"],data["os_finnifty_numtrades"])),l3=round(w_div(data["os_banknifty_netqty"],data["os_banknifty_numtrades"])),l4=round(w_div(data["os_nifty_netqty"],data["os_nifty_numtrades"])),l5=round(w_div(data["os_sensex_netqty"],data["os_sensex_numtrades"])),l6=0,\
-        t1=data["os_bankex_numtrades"],t2=data["os_finnifty_numtrades"],t3=data["os_banknifty_numtrades"],t4=data["os_nifty_numtrades"],t5=data["os_sensex_numtrades"],t6=0,\
+        t1=data["os_bankex_numtrades"]+data["os_bankex_buytrades"],t2=data["os_finnifty_numtrades"]+data["os_finnifty_buytrades"],t3=data["os_banknifty_numtrades"]+data["os_banknifty_buytrades"],t4=data["os_nifty_numtrades"]+data["os_nifty_buytrades"],t5=data["os_sensex_numtrades"]+data["os_sensex_buytrades"],t6=0,\
         gp1=data["os_bankex_grosspnl"],gp2=data["os_finnifty_grosspnl"],gp3=data["os_banknifty_grosspnl"],gp4=data["os_nifty_grosspnl"],gp5=data["os_sensex_grosspnl"],gp6=0,\
         chg1=data["os_bankex_charges"],chg2=data["os_finnifty_charges"],chg3=data["os_banknifty_charges"],chg4=data["os_nifty_charges"],chg5=data["os_sensex_charges"],chg6=0,\
         np1= data["os_bankex_netpnl"], np2 = data["os_finnifty_netpnl"], np3 = data["os_banknifty_netpnl"], np4 = data["os_nifty_netpnl"],np5=data["os_sensex_netpnl"],np6=0, \
@@ -658,12 +672,11 @@ def run():
         
         pnl_block(title="Commodity", name1="Silver CTS",name2="Silver OS",name3="",name4="",name5="",name6="",\
         l1 = round(w_div(data["cts_silverfut_netqty"],data["cts_silverfut_numtrades"])),l2 = round(w_div(data["os_silver_netqty"],data["os_silver_numtrades"])),l3=0,l4=0,l5=0,l6=0,\
-        t1=data["cts_silverfut_numtrades"],t2 = data["os_silver_numtrades"],t3=0,t4=0,t5=0,t6=0,\
+        t1=data["cts_silverfut_numtrades"],t2 = data["os_silver_numtrades"]+data["os_silver_buytrades"],t3=0,t4=0,t5=0,t6=0,\
         gp1=data["cts_silverfut_grosspnl"],gp2=data["os_silver_grosspnl"],gp3=0,gp4=0,gp5=0,gp6=0,\
         chg1=data["cts_silverfut_charges"],chg2=data["os_silver_charges"],chg3=0,chg4=0,chg5=0,chg6=0,\
         np1= data["cts_silverfut_netpnl"], np2 = data["os_silver_netpnl"], np3 = 0, np4 = 0,np5=0,np6=0, \
-        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3 = 0, npp4 = 0,npp5=0,npp6=0)        
-         
+        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3 = 0, npp4 = 0,npp5=0,npp6=0)              
               
     def save_setting():          
     
