@@ -91,11 +91,14 @@ def sign_in(email:str, password:str) -> None:
         if error_message in {"INVALID_EMAIL","EMAIL_NOT_FOUND","INVALID_PASSWORD","MISSING_PASSWORD"}:
             st.session_state.auth_warning = 'Error: Use a valid email and password'
         else:
-            st.session_state.auth_warning = 'Error: Please try again later'
+            # st.session_state.auth_warning = 'Error: Please try again later'
+            st.session_state.auth_warning = 'Error: Use a valid email and password'
 
     except Exception as error:
         print(error)
-        st.session_state.auth_warning = 'Error: Please try again later'
+        # st.session_state.auth_warning = 'Error: Please try again later'
+        st.session_state.auth_warning = 'Error: Use a valid email and password'
+
 
 
 def create_account(email:str, password:str) -> None:
