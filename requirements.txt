@@ -5,3 +5,5 @@ pydeck
 streamlit
 google-cloud-firestore
 google-auth-oauthlib
+dhanhq
+websockets
