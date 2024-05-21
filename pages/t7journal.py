@@ -28,6 +28,8 @@ from google.oauth2 import service_account
 from st_pages import Page, show_pages, add_page_title, hide_pages
 from collections import defaultdict
 from operator import itemgetter
+from dhanhq import dhanhq
+
 
 
 
@@ -118,7 +120,7 @@ def run():
         
         # test = sorted(nettradelist.items(), key = lambda x: x[1]['ltt'])
         # st.write(test)  
-        # out = test.pop(len(test)-1)
+        # out = test.pop(len(test)"NA")
         # st.write(out)
         # st.write(out[1])    
 
@@ -152,6 +154,17 @@ def run():
         cts_silverfut_netbuy = cts_silverfut_netsell = cts_silverfut_charges = cts_silverfut_brokerage = cts_silverfut_numtrades = cts_silverfut_netqty = 0 
         os_silver_netbuy = os_silver_netsell = os_silver_charges = os_silver_brokerage = os_silver_numtrades = os_silver_netqty = os_silver_buytrades = 0 
         
+        mtsm_Grosspnl = mtsm_Chg = mtsm_netpnl = 0
+        nts_nifty_Grosspnl = nts_nifty_Chg = nts_nifty_netpnl = 0
+        os_bankex_Grosspnl = os_bankex_Chg = os_bankex_netpnl = 0
+        os_sensex_Grosspnl = os_sensex_Chg = os_sensex_netpnl = 0
+        os_banknifty_Grosspnl = os_banknifty_Chg = os_banknifty_netpnl = 0
+        os_finnifty_Grosspnl = os_finnifty_Chg = os_finnifty_netpnl = 0
+        dts_nifty_Grosspnl = dts_nifty_Chg = dts_nifty_netpnl = 0
+        dts_banknifty_Grosspnl = dts_banknifty_Chg = dts_banknifty_netpnl = 0
+        dts_finnifty_Grosspnl = dts_finnifty_Chg = dts_finnifty_netpnl = 0
+        cts_silverfut_Grosspnl = cts_silverfut_Chg = cts_silverfut_netpnl = 0
+        os_silver_Grosspnl = os_silver_Chg = os_silver_netpnl = 0
 
         overnight_silver_fut_pos = dict()
         overnight_silver_fut_qty = 0
@@ -166,12 +179,16 @@ def run():
         pagecount = 0
         current_date = start_date
         
-        while current_date <= end_date:
-            urllink = "https://api.dhan.co/tradeHistory/"+ current_date.strftime("%Y-%m-%d") + "/" + current_date.strftime("%Y-%m-%d") + "/" + str(pagecount) + ""
-            myobj = {"Content-Type": "application/json", "access-token": token}
-            x = requests.get(url = urllink, headers = myobj)
-            data = json.loads(x.text)
+        dhan = dhanhq(clientid,token)
         
+        while current_date <= end_date:
+            # urllink = "https://api.dhan.co/tradeHistory/"+ current_date.strftime("%Y-%m-%d") + "/" + current_date.strftime("%Y-%m-%d") + "/" + str(pagecount) + ""
+            # myobj = {"Content-Type": "application/json", "access-token": token}
+            # x = requests.get(url = urllink, headers = myobj)
+            # data = json.loads(x.text)
+            
+            data = dhan.get_trade_history(current_date.strftime("%Y-%m-%d"),current_date.strftime("%Y-%m-%d"),page_number=pagecount).get("data")            
+            
             if(not data):
                 pagecount = 0
                 current_date = current_date + datetime.timedelta(days=1)                
@@ -190,7 +207,7 @@ def run():
                             mtsm_charges = mtsm_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                     
                     if "BANKNIFTY" not in item["customSymbol"] and "FINNIFTY" not in item["customSymbol"] and "NIFTY" in item["customSymbol"] and "INTRADAY" in item["productType"] :
-                        d = parser.parse(item["exchangeTime"]).time()
+                        d = parser.parse(item["exchangeTime"]).time()                        
                         if dts_endtime >= d >= dts_starttime: 
                             if "BUY" in item["transactionType"]: 
                                 dts_nifty_netbuy = dts_nifty_netbuy + item["tradedPrice"] * item["tradedQuantity"]
@@ -447,7 +464,7 @@ def run():
         output["dts_nifty_brokerage"] = dts_nifty_brokerage
         output["dts_nifty_numtrades"] = dts_nifty_numtrades  
         output["dts_nifty_netqty"] = dts_nifty_netqty
-        
+       
         output["dts_banknifty_grosspnl"] = dts_banknifty_Grosspnl
         output["dts_banknifty_charges"] = dts_banknifty_Chg
         output["dts_banknifty_netpnl"] = dts_banknifty_netpnl 
@@ -506,103 +523,103 @@ def run():
                 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
                 with col1:
                     st.markdown("Index")
-                    if name1: 
+                    if name1 != "NA": 
                         st.write(":blue["+name1+"]")
-                    if name2: 
+                    if name2 != "NA": 
                         st.write(":blue["+name2+"]")
-                    if name3: 
+                    if name3 != "NA": 
                         st.write(":blue["+name3+"]")
-                    if name4: 
+                    if name4 != "NA": 
                         st.write(":blue["+name4+"]")
-                    if name5: 
+                    if name5 != "NA": 
                         st.write(":blue["+name5+"]")
-                    if name6: 
+                    if name6 != "NA": 
                         st.write(":blue["+name6+"]")
                 with col2:
                     st.markdown("Avg Qty")
-                    if 11:
+                    if 11 !="NA":
                         st.write(":blue[" + str(l1)+"]")
-                    if l2:
+                    if l2 !="NA":
                         st.write(":blue[" + str(l2)+"]")
-                    if l3:
+                    if l3 !="NA":
                         st.write(":blue[" + str(l3)+"]")
-                    if l4: 
+                    if l4 !="NA": 
                         st.write(":blue[" + str(l4)+"]") 
-                    if l5: 
+                    if l5 !="NA": 
                         st.write(":blue[" + str(l5)+"]")   
-                    if l6: 
+                    if l6 !="NA": 
                         st.write(":blue[" + str(l6)+"]") 
                           
                 with col3:
                     st.markdown("Trades")
-                    if 11:
+                    if t1 !="NA":
                         st.write(":blue[" + str(t1)+"]")
-                    if l2:
+                    if t2 !="NA":
                         st.write(":blue[" + str(t2)+"]")
-                    if l3:
+                    if t3 !="NA":
                         st.write(":blue[" + str(t3)+"]")
-                    if l4: 
+                    if t4 !="NA": 
                         st.write(":blue[" + str(t4)+"]") 
-                    if l5: 
+                    if t5 !="NA": 
                         st.write(":blue[" + str(t5)+"]")   
-                    if l6: 
+                    if t6 !="NA": 
                         st.write(":blue[" + str(t6)+"]")        
-                with col4:
+                with col4:                    
                     st.markdown("Gross Profit")
-                    if gp1:
+                    if gp1 !="NA":
                         pnl_row(gp1)
-                    if gp2:
+                    if gp2 !="NA":
                         pnl_row(gp2)
-                    if gp3:
-                        pnl_row(gp3)
-                    if gp4: 
+                    if gp3 !="NA":
+                        pnl_row(gp3)                    
+                    if gp4 !="NA": 
                         pnl_row(gp4) 
-                    if gp5: 
+                    if gp5 !="NA": 
                         pnl_row(gp5)   
-                    if gp6: 
+                    if gp6 !="NA": 
                         pnl_row(gp6)       
                 with col5:
                     st.markdown("Charges")
-                    if chg1:
+                    if chg1 !="NA":
                         st.write(":red[" + str(chg1)+"]")
-                    if chg2:
+                    if chg2 !="NA":
                         st.write(":red[" + str(chg2)+"]")
-                    if chg3:
+                    if chg3 !="NA":
                         st.write(":red[" + str(chg3)+"]")
-                    if chg4: 
+                    if chg4 !="NA": 
                         st.write(":red[" + str(chg4)+"]") 
-                    if chg5: 
+                    if chg5 !="NA": 
                         st.write(":red[" + str(chg5)+"]")   
-                    if chg6: 
+                    if chg6 !="NA": 
                         st.write(":red[" + str(chg6)+"]")                  
                    
                 with col6:
                     st.markdown("Net Profit")
-                    if np1:
+                    if np1 !="NA":
                         pnl_row(np1)
-                    if np2:
+                    if np2 !="NA":
                         pnl_row(np2)
-                    if np3:
+                    if np3 !="NA":
                         pnl_row(np3)
-                    if np4: 
+                    if np4 !="NA": 
                         pnl_row(np4) 
-                    if np5: 
+                    if np5 !="NA": 
                         pnl_row(np5)   
-                    if np6: 
+                    if np6 !="NA": 
                         pnl_row(np6)             
                 with col7:
                     st.markdown("Net Profit %") 
-                    if npp1:
+                    if npp1 !="NA":
                         pnl_row(npp1)
-                    if npp2:
+                    if npp2 !="NA":
                         pnl_row(npp2)
-                    if npp3:
+                    if npp3 !="NA":
                         pnl_row(npp3)
-                    if npp4: 
+                    if npp4 !="NA": 
                         pnl_row(npp4) 
-                    if npp5: 
+                    if npp5 !="NA": 
                         pnl_row(npp5)   
-                    if npp6: 
+                    if npp6 !="NA": 
                         pnl_row(npp6) 
             
     def click_button():
@@ -646,41 +663,41 @@ def run():
                 else:
                     pnl_row(0)
         
-        pnl_block(title="Positional", name1="Nifty NTS",name2="",name3="",name4="",name5="",name6="",\
-        l1 = round(w_div(data["nts_nifty_netqty"],data["nts_nifty_numtrades"])),l2 = 0,l3=0,l4=0,l5=0,l6=0,\
-        t1=data["nts_nifty_numtrades"],t2=0,t3=0,t4=0,t5=0,t6=0,\
-        gp1=data["nts_nifty_grosspnl"],gp2=0,gp3=0,gp4=0,gp5=0,gp6=0,\
-        chg1=data["nts_nifty_charges"],chg2=0,chg3=0,chg4=0,chg5=0,chg6=0,\
-        np1= data["nts_nifty_netpnl"], np2 = 0, np3 = 0, np4 = 0,np5=0,np6=0, \
-        npp1= data["nts_nifty_netpnl%"], npp2 = 0, npp3 = 0, npp4 = 0,npp5=0,npp6=0)         
+        pnl_block(title="Positional", name1="Nifty NTS",name2="NA",name3="NA",name4="NA",name5="NA",name6="NA",\
+        l1 = round(w_div(data["nts_nifty_netqty"],data["nts_nifty_numtrades"])),l2="NA",l3="NA",l4="NA",l5="NA",l6="NA",\
+        t1=data["nts_nifty_numtrades"],t2="NA",t3="NA",t4="NA",t5="NA",t6="NA",\
+        gp1=data["nts_nifty_grosspnl"],gp2="NA",gp3="NA",gp4="NA",gp5="NA",gp6="NA",\
+        chg1=data["nts_nifty_charges"],chg2="NA",chg3="NA",chg4="NA",chg5="NA",chg6="NA",\
+        np1= data["nts_nifty_netpnl"], np2 = "NA", np3 ="NA", np4 = "NA",np5="NA",np6="NA", \
+        npp1= data["nts_nifty_netpnl%"], npp2 = "NA", npp3 = "NA", npp4 = "NA",npp5="NA",npp6="NA")         
         
-        pnl_block(title="Intraday", name1="BankNifty MTS",name2="Nifty DTS",name3="BankNifty DTS",name4="FinNifty DTS",name5="",name6="",\
-        l1 = round(w_div(data["mtsm_netqty"],data["mtsm_numtrades"])),l2 = round(w_div(data["dts_nifty_netqty"],data["dts_nifty_numtrades"])),l3=round(w_div(data["dts_banknifty_netqty"],data["dts_banknifty_numtrades"])),l4=round(w_div(data["dts_finnifty_netqty"],data["dts_finnifty_numtrades"])),l5=0,l6=0,\
-        t1=data["mtsm_numtrades"],t2=data["dts_nifty_numtrades"],t3=data["dts_banknifty_numtrades"],t4=data["dts_finnifty_numtrades"],t5=0,t6=0,\
-        gp1=data["mtsm_grosspnl"],gp2=data["dts_nifty_grosspnl"],gp3=data["dts_banknifty_grosspnl"],gp4=data["dts_finnifty_grosspnl"],gp5=0,gp6=0,\
-        chg1=data["mtsm_charges"],chg2=data["dts_nifty_charges"],chg3=data["dts_banknifty_charges"],chg4=data["dts_finnifty_charges"],chg5=0,chg6=0,\
-        np1= data["mtsm_netpnl"], np2 = data["dts_nifty_netpnl"], np3 = data["dts_banknifty_netpnl"], np4 = data["dts_finnifty_netpnl"],np5=0,np6=0, \
-        npp1= data["mtsm_netpnl%"], npp2 = data["dts_nifty_netpnl%"], npp3 = data["dts_banknifty_netpnl%"], npp4 = data["dts_finnifty_netpnl%"],npp5=0,npp6=0)
+        pnl_block(title="Intraday", name1="BankNifty MTS",name2="Nifty DTS",name3="BankNifty DTS",name4="FinNifty DTS",name5="NA",name6="NA",\
+        l1 = round(w_div(data["mtsm_netqty"],data["mtsm_numtrades"])),l2 = round(w_div(data["dts_nifty_netqty"],data["dts_nifty_numtrades"])),l3=round(w_div(data["dts_banknifty_netqty"],data["dts_banknifty_numtrades"])),l4=round(w_div(data["dts_finnifty_netqty"],data["dts_finnifty_numtrades"])),l5="NA",l6="NA",\
+        t1=data["mtsm_numtrades"],t2=data["dts_nifty_numtrades"],t3=data["dts_banknifty_numtrades"],t4=data["dts_finnifty_numtrades"],t5="NA",t6="NA",\
+        gp1=data["mtsm_grosspnl"],gp2=data["dts_nifty_grosspnl"],gp3=data["dts_banknifty_grosspnl"],gp4=data["dts_finnifty_grosspnl"],gp5="NA",gp6="NA",\
+        chg1=data["mtsm_charges"],chg2=data["dts_nifty_charges"],chg3=data["dts_banknifty_charges"],chg4=data["dts_finnifty_charges"],chg5="NA",chg6="NA",\
+        np1= data["mtsm_netpnl"], np2 = data["dts_nifty_netpnl"], np3 = data["dts_banknifty_netpnl"], np4 = data["dts_finnifty_netpnl"],np5="NA",np6="NA", \
+        npp1= data["mtsm_netpnl%"], npp2 = data["dts_nifty_netpnl%"], npp3 = data["dts_banknifty_netpnl%"], npp4 = data["dts_finnifty_netpnl%"],npp5="NA",npp6="NA")
         
-        pnl_block(title="Option Selling", name1="Bankex",name2="FinNifty",name3="BankNifty",name4="Nifty",name5="Sensex",name6="",\
-        l1 = round(w_div(data["os_bankex_netqty"],data["os_bankex_numtrades"])),l2 = round(w_div(data["os_finnifty_netqty"],data["os_finnifty_numtrades"])),l3=round(w_div(data["os_banknifty_netqty"],data["os_banknifty_numtrades"])),l4=round(w_div(data["os_nifty_netqty"],data["os_nifty_numtrades"])),l5=round(w_div(data["os_sensex_netqty"],data["os_sensex_numtrades"])),l6=0,\
-        t1=data["os_bankex_numtrades"]+data["os_bankex_buytrades"],t2=data["os_finnifty_numtrades"]+data["os_finnifty_buytrades"],t3=data["os_banknifty_numtrades"]+data["os_banknifty_buytrades"],t4=data["os_nifty_numtrades"]+data["os_nifty_buytrades"],t5=data["os_sensex_numtrades"]+data["os_sensex_buytrades"],t6=0,\
-        gp1=data["os_bankex_grosspnl"],gp2=data["os_finnifty_grosspnl"],gp3=data["os_banknifty_grosspnl"],gp4=data["os_nifty_grosspnl"],gp5=data["os_sensex_grosspnl"],gp6=0,\
-        chg1=data["os_bankex_charges"],chg2=data["os_finnifty_charges"],chg3=data["os_banknifty_charges"],chg4=data["os_nifty_charges"],chg5=data["os_sensex_charges"],chg6=0,\
-        np1= data["os_bankex_netpnl"], np2 = data["os_finnifty_netpnl"], np3 = data["os_banknifty_netpnl"], np4 = data["os_nifty_netpnl"],np5=data["os_sensex_netpnl"],np6=0, \
-        npp1= data["os_bankex_netpnl%"], npp2 = data["os_finnifty_netpnl%"], npp3 = data["os_banknifty_netpnl%"], npp4 = data["os_nifty_netpnl%"],npp5=data["os_sensex_netpnl%"],npp6=0)
+        pnl_block(title="Option Selling", name1="Bankex",name2="FinNifty",name3="BankNifty",name4="Nifty",name5="Sensex",name6="NA",\
+        l1 = round(w_div(data["os_bankex_netqty"],data["os_bankex_numtrades"])),l2 = round(w_div(data["os_finnifty_netqty"],data["os_finnifty_numtrades"])),l3=round(w_div(data["os_banknifty_netqty"],data["os_banknifty_numtrades"])),l4=round(w_div(data["os_nifty_netqty"],data["os_nifty_numtrades"])),l5=round(w_div(data["os_sensex_netqty"],data["os_sensex_numtrades"])),l6="NA",\
+        t1=data["os_bankex_numtrades"]+data["os_bankex_buytrades"],t2=data["os_finnifty_numtrades"]+data["os_finnifty_buytrades"],t3=data["os_banknifty_numtrades"]+data["os_banknifty_buytrades"],t4=data["os_nifty_numtrades"]+data["os_nifty_buytrades"],t5=data["os_sensex_numtrades"]+data["os_sensex_buytrades"],t6="NA",\
+        gp1=data["os_bankex_grosspnl"],gp2=data["os_finnifty_grosspnl"],gp3=data["os_banknifty_grosspnl"],gp4=data["os_nifty_grosspnl"],gp5=data["os_sensex_grosspnl"],gp6="NA",\
+        chg1=data["os_bankex_charges"],chg2=data["os_finnifty_charges"],chg3=data["os_banknifty_charges"],chg4=data["os_nifty_charges"],chg5=data["os_sensex_charges"],chg6="NA",\
+        np1= data["os_bankex_netpnl"], np2 = data["os_finnifty_netpnl"], np3 = data["os_banknifty_netpnl"], np4 = data["os_nifty_netpnl"],np5=data["os_sensex_netpnl"],np6="NA", \
+        npp1= data["os_bankex_netpnl%"], npp2 = data["os_finnifty_netpnl%"], npp3 = data["os_banknifty_netpnl%"], npp4 = data["os_nifty_netpnl%"],npp5=data["os_sensex_netpnl%"],npp6="NA")
         
-        pnl_block(title="Commodity", name1="Silver CTS",name2="Silver OS",name3="",name4="",name5="",name6="",\
-        l1 = round(w_div(data["cts_silverfut_netqty"],data["cts_silverfut_numtrades"])),l2 = round(w_div(data["os_silver_netqty"],data["os_silver_numtrades"])),l3=0,l4=0,l5=0,l6=0,\
-        t1=data["cts_silverfut_numtrades"],t2 = data["os_silver_numtrades"]+data["os_silver_buytrades"],t3=0,t4=0,t5=0,t6=0,\
-        gp1=data["cts_silverfut_grosspnl"],gp2=data["os_silver_grosspnl"],gp3=0,gp4=0,gp5=0,gp6=0,\
-        chg1=data["cts_silverfut_charges"],chg2=data["os_silver_charges"],chg3=0,chg4=0,chg5=0,chg6=0,\
-        np1= data["cts_silverfut_netpnl"], np2 = data["os_silver_netpnl"], np3 = 0, np4 = 0,np5=0,np6=0, \
-        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3 = 0, npp4 = 0,npp5=0,npp6=0)              
+        pnl_block(title="Commodity", name1="Silver CTS",name2="Silver OS",name3="NA",name4="NA",name5="NA",name6="NA",\
+        l1 = round(w_div(data["cts_silverfut_netqty"],data["cts_silverfut_numtrades"])),l2 = round(w_div(data["os_silver_netqty"],data["os_silver_numtrades"])),l3="NA",l4="NA",l5="NA",l6="NA",\
+        t1=data["cts_silverfut_numtrades"],t2 = data["os_silver_numtrades"]+data["os_silver_buytrades"],t3="NA",t4="NA",t5="NA",t6="NA",\
+        gp1=data["cts_silverfut_grosspnl"],gp2=data["os_silver_grosspnl"],gp3="NA",gp4="NA",gp5="NA",gp6="NA",\
+        chg1=data["cts_silverfut_charges"],chg2=data["os_silver_charges"],chg3="NA",chg4="NA",chg5="NA",chg6="NA",\
+        np1= data["cts_silverfut_netpnl"], np2 = data["os_silver_netpnl"], np3="NA", np4="NA",np5="NA",np6="NA", \
+        npp1= data["cts_silverfut_netpnl%"], npp2 = data["os_silver_netpnl%"], npp3="NA", npp4="NA",npp5="NA",npp6="NA")              
               
     def save_setting():          
     
-        msg = st.toast(":green[Updating Database with your new settings]")       
+        msg = st.toast(":green[Updating Database]",icon='⌛')       
         
         doc_ref.set({
             'userid': st.session_state["clientid_val"],
@@ -690,14 +707,20 @@ def run():
             'api_token': st.session_state["token_val"]            
         })
         time.sleep(1)
-        msg.toast(":green[Settings Updated]")
-        # msg = st.success('Setting Updated!', icon="✅")        
-        # time.sleep(1) # Wait for 3 seconds
-        # msg.empty() # Clear the alert
-        
+        msg.toast(":green[Settings Saved]",icon='🎉')              
           
     def logout():
         auth_functions.sign_out()
+    
+    def check_cred():
+        if st.session_state["token_val"] and st.session_state["clientid_val"]:
+            dhan = dhanhq(st.session_state["clientid_val"],st.session_state["token_val"],)
+            out = dhan.get_fund_limits()            
+            if(out["status"] != "success"):
+                st.error(":red[API Token is not correct]",icon = "🚨")               
+            else:
+                if(out["data"]["dhanClientId"] != st.session_state["clientid_val"]):
+                    st.error(":red[Client ID is not correct]", icon = "🚨")                    
     
     #main 
  
@@ -729,13 +752,12 @@ def run():
         sd_val = datetime.datetime.strptime(doc["startdate"], '%Y-%m-%d').date()
         ed_val = datetime.datetime.strptime(doc["enddate"], '%Y-%m-%d').date()
     
-    token = st.text_input("API Token",value = token_val,key = "token_val")
-    clientid = st.text_input("Client ID",value= clientid_val,key = "clientid_val")
+    token = st.text_input("API Token",value = token_val,key = "token_val",on_change = check_cred)
+    clientid = st.text_input("Client ID",value= clientid_val,key = "clientid_val",on_change = check_cred)
     capital = st.number_input("Capital", min_value= 0, max_value=None, value=capital_val, step=1, help="Enter trading capital", disabled=False, label_visibility="visible",key="capital_val")
     start_date = st.date_input("Start Date", value = sd_val,key = "sd_val")
-    end_date = st.date_input("End Date", value = ed_val,key = "ed_val")        
-       
-    
+    end_date = st.date_input("End Date", value = ed_val,key = "ed_val")    
+          
     [col1,col2,col3,col4] = st.columns(4)
     with col2:
         st.button("Save Settings", type="primary", on_click=save_setting,use_container_width=False) 
