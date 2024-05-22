@@ -139,7 +139,7 @@ def run():
         mtsm_starttime = datetime.time(9, 16, 0)
         mtsm_endtime = datetime.time(9, 45, 0)
         dts_starttime = datetime.time(9, 45, 0)
-        dts_endtime = datetime.time(15, 20, 0)
+        dts_endtime = datetime.time(15, 22, 0)
         
         mtsm_netbuy =  mtsm_netsell =  mtsm_charges = mtsm_brokerage = mtsm_numtrades = mtsm_netqty = 0
         nts_nifty_netbuy =  nts_nifty_netsell =  nts_nifty_charges = nts_nifty_brokerage = nts_nifty_numtrades = nts_nifty_netqty = 0
@@ -351,7 +351,8 @@ def run():
                         os_silver_charges = os_silver_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                         fg = True
                     if(fg==False):
-                        st.write(item)
+                        # st.write(item)
+                        pass
                     fg = False    
                 pagecount = pagecount + 1            
         
@@ -505,7 +506,7 @@ def run():
         output["os_silver_numtrades"] = os_silver_numtrades 
         output["os_silver_netqty"] = os_silver_netqty 
         output["os_silver_buytrades"] = os_silver_buytrades             
-        st.write(nt)
+        # st.write(nt)
         return(output)       
     
     def plot_title(title, size, color):
@@ -518,9 +519,9 @@ def run():
     
     def pnl_row(val):
         if(val >= 0) :
-            st.write(":green[" + str(val)+"]") 
+            st.write(":green[" + str(round(val,2))+"]") 
         else :
-            st.write(":red[" + str(val)+"]")
+            st.write(":red[" + str(round(val,2))+"]")
     
     def pnl_block(title,name1,name2,name3,name4,name5,name6,l1,l2,l3,l4,l5,l6,t1,t2,t3,t4,t5,t6,gp1,gp2,gp3,gp4,gp5,gp6,chg1,chg2,chg3,chg4,chg5,chg6,np1,np2,np3,np4,np5,np6,npp1,npp2,npp3,npp4,npp5,npp6):
         if title:
@@ -542,93 +543,142 @@ def run():
                     if name5 != "NA": 
                         st.write(":blue["+name5+"]")
                     if name6 != "NA": 
-                        st.write(":blue["+name6+"]")
+                        st.write(":blue["+name6+"]")                  
+                    st.write(":black[Total]")
+
                 with col2:
+                    sum = 0
                     st.markdown("Avg Qty")
                     if 11 !="NA":
                         st.write(":blue[" + str(l1)+"]")
+                        sum = sum + l1
                     if l2 !="NA":
                         st.write(":blue[" + str(l2)+"]")
+                        sum = sum + l2
                     if l3 !="NA":
                         st.write(":blue[" + str(l3)+"]")
+                        sum = sum + l3
                     if l4 !="NA": 
-                        st.write(":blue[" + str(l4)+"]") 
+                        st.write(":blue[" + str(l4)+"]")
+                        sum = sum + l4 
                     if l5 !="NA": 
-                        st.write(":blue[" + str(l5)+"]")   
+                        st.write(":blue[" + str(l5)+"]")
+                        sum = sum + l5   
                     if l6 !="NA": 
-                        st.write(":blue[" + str(l6)+"]") 
-                          
+                        st.write(":blue[" + str(l6)+"]")
+                        sum = sum + l6 
+                    st.write(":black[" + str(sum) +"]")     
                 with col3:
+                    sum = 0
                     st.markdown("Trades")
                     if t1 !="NA":
                         st.write(":blue[" + str(t1)+"]")
+                        sum = sum + t1
                     if t2 !="NA":
                         st.write(":blue[" + str(t2)+"]")
+                        sum = sum + t2
                     if t3 !="NA":
                         st.write(":blue[" + str(t3)+"]")
+                        sum = sum + t3
                     if t4 !="NA": 
                         st.write(":blue[" + str(t4)+"]") 
+                        sum = sum + t4
                     if t5 !="NA": 
-                        st.write(":blue[" + str(t5)+"]")   
+                        st.write(":blue[" + str(t5)+"]") 
+                        sum = sum + t5  
                     if t6 !="NA": 
-                        st.write(":blue[" + str(t6)+"]")        
+                        st.write(":blue[" + str(t6)+"]") 
+                        sum = sum + t6
+                    st.write(":black[" + str(sum) +"]")            
                 with col4:                    
+                    sum = 0
                     st.markdown("Gross Profit")
                     if gp1 !="NA":
                         pnl_row(gp1)
+                        sum = sum + gp1
                     if gp2 !="NA":
                         pnl_row(gp2)
+                        sum = sum + gp2
                     if gp3 !="NA":
-                        pnl_row(gp3)                    
+                        pnl_row(gp3)
+                        sum = sum + gp3                    
                     if gp4 !="NA": 
-                        pnl_row(gp4) 
+                        pnl_row(gp4)
+                        sum = sum + gp4 
                     if gp5 !="NA": 
-                        pnl_row(gp5)   
+                        pnl_row(gp5)
+                        sum = sum + gp5   
                     if gp6 !="NA": 
-                        pnl_row(gp6)       
+                        pnl_row(gp6)
+                        sum = sum + gp6
+                    pnl_row(sum)             
                 with col5:
+                    sum = 0
                     st.markdown("Charges")
                     if chg1 !="NA":
                         st.write(":red[" + str(chg1)+"]")
+                        sum = sum + chg1
                     if chg2 !="NA":
                         st.write(":red[" + str(chg2)+"]")
+                        sum = sum + chg2
                     if chg3 !="NA":
                         st.write(":red[" + str(chg3)+"]")
+                        sum = sum + chg3
                     if chg4 !="NA": 
                         st.write(":red[" + str(chg4)+"]") 
+                        sum = sum + chg4
                     if chg5 !="NA": 
-                        st.write(":red[" + str(chg5)+"]")   
+                        st.write(":red[" + str(chg5)+"]") 
+                        sum = sum + chg5  
                     if chg6 !="NA": 
-                        st.write(":red[" + str(chg6)+"]")                  
+                        st.write(":red[" + str(chg6)+"]") 
+                        sum = sum + chg6
+                    st.write(":red[" + str(round(sum,2))+"]")                         
                    
                 with col6:
+                    sum = 0
                     st.markdown("Net Profit")
                     if np1 !="NA":
                         pnl_row(np1)
+                        sum = sum + np1
                     if np2 !="NA":
                         pnl_row(np2)
+                        sum = sum + np2
                     if np3 !="NA":
                         pnl_row(np3)
+                        sum = sum + np3
                     if np4 !="NA": 
-                        pnl_row(np4) 
+                        pnl_row(np4)
+                        sum = sum + np4
                     if np5 !="NA": 
-                        pnl_row(np5)   
+                        pnl_row(np5)
+                        sum = sum + np5  
                     if np6 !="NA": 
-                        pnl_row(np6)             
+                        pnl_row(np6)
+                        sum = sum + np6
+                    pnl_row(sum)                   
                 with col7:
+                    sum = 0
                     st.markdown("Net Profit %") 
                     if npp1 !="NA":
                         pnl_row(npp1)
+                        sum = sum + npp1
                     if npp2 !="NA":
                         pnl_row(npp2)
+                        sum = sum + npp2
                     if npp3 !="NA":
                         pnl_row(npp3)
+                        sum = sum + npp3
                     if npp4 !="NA": 
                         pnl_row(npp4) 
+                        sum = sum + npp4
                     if npp5 !="NA": 
-                        pnl_row(npp5)   
+                        pnl_row(npp5) 
+                        sum = sum + npp5  
                     if npp6 !="NA": 
-                        pnl_row(npp6) 
+                        pnl_row(npp6)
+                        sum = sum + npp6
+                    pnl_row(sum)                       
             
     def click_button():
 
