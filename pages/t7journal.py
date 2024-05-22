@@ -544,6 +544,7 @@ def run():
                         st.write(":blue["+name5+"]")
                     if name6 != "NA": 
                         st.write(":blue["+name6+"]")                  
+                    st.header("",divider="rainbow")
                     st.write(":black[Total]")
 
                 with col2:
@@ -566,7 +567,8 @@ def run():
                         sum = sum + l5   
                     if l6 !="NA": 
                         st.write(":blue[" + str(l6)+"]")
-                        sum = sum + l6 
+                        sum = sum + l6
+                    st.header("",divider="rainbow") 
                     st.write(":black[" + str(sum) +"]")     
                 with col3:
                     sum = 0
@@ -589,6 +591,7 @@ def run():
                     if t6 !="NA": 
                         st.write(":blue[" + str(t6)+"]") 
                         sum = sum + t6
+                    st.header("",divider="rainbow")
                     st.write(":black[" + str(sum) +"]")            
                 with col4:                    
                     sum = 0
@@ -611,6 +614,7 @@ def run():
                     if gp6 !="NA": 
                         pnl_row(gp6)
                         sum = sum + gp6
+                    st.header("",divider="rainbow")
                     pnl_row(sum)             
                 with col5:
                     sum = 0
@@ -633,6 +637,7 @@ def run():
                     if chg6 !="NA": 
                         st.write(":red[" + str(chg6)+"]") 
                         sum = sum + chg6
+                    st.header("",divider="rainbow")
                     st.write(":red[" + str(round(sum,2))+"]")                         
                    
                 with col6:
@@ -656,6 +661,7 @@ def run():
                     if np6 !="NA": 
                         pnl_row(np6)
                         sum = sum + np6
+                    st.header("",divider="rainbow")
                     pnl_row(sum)                   
                 with col7:
                     sum = 0
@@ -678,6 +684,7 @@ def run():
                     if npp6 !="NA": 
                         pnl_row(npp6)
                         sum = sum + npp6
+                    st.header("",divider="rainbow")
                     pnl_row(sum)                       
             
     def click_button():
