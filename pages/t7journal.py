@@ -19,7 +19,7 @@ import streamlit as st
 from st_pages import Page, show_pages, add_page_title
 import auth_functions
 import time
-
+import pandas as pd
 
 from streamlit.logger import get_logger
 from dateutil import parser 
@@ -39,7 +39,7 @@ def run():
     st.set_page_config(
         page_title="T7 Journal",
         page_icon="📘",
-        # layout="wide",
+        layout="wide",
     )
 
     show_pages(
@@ -179,6 +179,12 @@ def run():
         pagecount = 0
         current_date = start_date
         
+        # Create an empty dictionary to store data
+        data_dict = {}
+
+        # Create a placeholder for the dataframe
+        dataframe_placeholder = st.empty()
+
         dhan = dhanhq(clientid,token)
         nt = 0
         fg = False
@@ -192,10 +198,19 @@ def run():
             
             if(not data):
                 pagecount = 0
-                current_date = current_date + datetime.timedelta(days=1)                
+                current_date = current_date + datetime.timedelta(days=1)                              
             else:
                 for item in data: 
-                    nt = nt + 1                    
+                   
+                    nt = nt + 1 
+                                    
+                    # for key, value in item.items():
+                    #     if key not in data_dict:
+                    #         data_dict[key] = []  # Create a new list for the column
+                    #     data_dict[key].append(value) 
+                    # df = pd.DataFrame(data_dict)                    
+                    # dataframe_placeholder.dataframe(df)
+                    
                     if "BANKNIFTY" in item["customSymbol"] and "INTRADAY" in item["productType"] :
                         d = parser.parse(item["exchangeTime"]).time()
                         if mtsm_endtime >= d >= mtsm_starttime:                             
@@ -351,9 +366,23 @@ def run():
                         os_silver_charges = os_silver_charges + float(item["sebiTax"]) + float(item["stt"]) + float(item["brokerageCharges"]) + float(item["serviceTax"]) + float(item["exchangeTransactionCharges"]) + float(item["stampDuty"])
                         fg = True
                     if(fg==False):
-                        # st.write(item)
-                        pass
-                    fg = False    
+                        if "BANKNIFTY" not in item["customSymbol"] and "FINNIFTY" not in item["customSymbol"] and "NIFTY" in item["customSymbol"]:
+                            nts_nifty_numtrades = nts_nifty_numtrades + 1
+                            overnight_nts_pos[nifty_nts_count] = item                    
+                            nifty_nts_count= nifty_nts_count + 1
+                        if "SILVER" in item["customSymbol"] and "FUTCOM" in item["instrument"]:   
+                            if "INTRADAY" in item["productType"] :
+                                overnight_silver_intrafut_pos[silver_intra_count] = item 
+                                silver_intra_count = silver_intra_count + 1   
+                            if "MARGIN" in item["productType"] :
+                                overnight_silver_fut_pos[silver_margin_count] = item 
+                                silver_margin_count = silver_margin_count + 1
+                            cts_silverfut_numtrades = cts_silverfut_numtrades + 1
+                        if "SILVER" in item["customSymbol"] and "OPTFUT" in item["instrument"]:
+                            overnight_silver_opt_pos[silver_opt_count] = item                  
+                            silver_opt_count = silver_opt_count + 1          
+                       
+                    fg = False                
                 pagecount = pagecount + 1            
         
         mtsm_Grosspnl = round((mtsm_netsell - mtsm_netbuy),2)
@@ -531,7 +560,7 @@ def run():
             with st.container(border=True):        
                 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
                 with col1:
-                    st.markdown("Index")
+                    st.markdown("<b>Index</b>", unsafe_allow_html=True)                    
                     if name1 != "NA": 
                         st.write(":blue["+name1+"]")
                     if name2 != "NA": 
@@ -548,8 +577,8 @@ def run():
                     st.write(":black[Total]")
 
                 with col2:
-                    sum = 0
-                    st.markdown("Avg Qty")
+                    sum = 0                    
+                    st.markdown("<b>Avg Qty</b>", unsafe_allow_html=True)
                     if 11 !="NA":
                         st.write(":blue[" + str(l1)+"]")
                         sum = sum + l1
@@ -572,7 +601,7 @@ def run():
                     st.write(":black[" + str(sum) +"]")     
                 with col3:
                     sum = 0
-                    st.markdown("Trades")
+                    st.markdown("<b>Trades</b>", unsafe_allow_html=True)                    
                     if t1 !="NA":
                         st.write(":blue[" + str(t1)+"]")
                         sum = sum + t1
@@ -595,7 +624,7 @@ def run():
                     st.write(":black[" + str(sum) +"]")            
                 with col4:                    
                     sum = 0
-                    st.markdown("Gross Profit")
+                    st.markdown("<b>Gross Profit</b>", unsafe_allow_html=True)                    
                     if gp1 !="NA":
                         pnl_row(gp1)
                         sum = sum + gp1
@@ -618,7 +647,7 @@ def run():
                     pnl_row(sum)             
                 with col5:
                     sum = 0
-                    st.markdown("Charges")
+                    st.markdown("<b>Charges</b>", unsafe_allow_html=True)                    
                     if chg1 !="NA":
                         st.write(":red[" + str(chg1)+"]")
                         sum = sum + chg1
@@ -642,7 +671,7 @@ def run():
                    
                 with col6:
                     sum = 0
-                    st.markdown("Net Profit")
+                    st.markdown("<b>Net Profit</b>", unsafe_allow_html=True)                       
                     if np1 !="NA":
                         pnl_row(np1)
                         sum = sum + np1
@@ -665,7 +694,7 @@ def run():
                     pnl_row(sum)                   
                 with col7:
                     sum = 0
-                    st.markdown("Net Profit %") 
+                    st.markdown("<b>Net Profit %</b>", unsafe_allow_html=True)                       
                     if npp1 !="NA":
                         pnl_row(npp1)
                         sum = sum + npp1
@@ -707,22 +736,22 @@ def run():
             col1, col2, col3, col4, col5, col6 = st.columns(6)
             
             with col1:
-                st.markdown("Total Trades")
+                st.markdown("<b>Total Trades</b>", unsafe_allow_html=True)                
                 st.write(":blue[" + str(tot_trades)+"]")
             with col2:
-                st.markdown("Gross Profit")
+                st.markdown("<b>Gross Profit</b>", unsafe_allow_html=True)
                 pnl_row(round(gross_pnl,2))
             with col3:
-                st.markdown("Charges")
+                st.markdown("<b>Charges</b>", unsafe_allow_html=True)
                 st.write(":red[" + str(charges_less_brokerage)+"]")
             with col4:
-                st.markdown("Brokerage")
+                st.markdown("<b>Brokerage</b>", unsafe_allow_html=True)
                 st.write(":red[" + str(round(brokerage,4)) +"]")                
             with col5:
-                st.markdown("Net Profit")
+                st.markdown("<b>Net Profit</b>", unsafe_allow_html=True)
                 pnl_row(round(net_pnl,2))
             with col6:
-                st.markdown("Net Profit %")
+                st.markdown("<b>Net Profit %</b>", unsafe_allow_html=True)
                 if(capital > 0):
                     pnl_row(round(((net_pnl / capital)*100),2))  
                 else:
