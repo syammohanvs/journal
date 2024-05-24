@@ -128,7 +128,7 @@ def run():
             
             if(nettradelist[index]['tradeqty'] != 0):                              
                 
-                current_date = start_date
+                current_date = start_date - datetime.timedelta(days=1) 
                 prev_end_date = start_date - datetime.timedelta(days=10)  
                 
                 while current_date >= prev_end_date:    
@@ -142,20 +142,20 @@ def run():
                         for item in prev_data:                         
                             if (nettradelist[index].get("contract") == item.get("customSymbol")) and (abs(nettradelist[index].get("tradeqty")) == item.get("tradedQuantity")):
                                 if nettradelist[index].get("tradeqty") < 0 and "BUY" in item["transactionType"]:
-                                    nettradelist[index]["val"]  =  nettradelist[index].get("val")  + (nettradelist[index].get("ltp") - item.get("tradedPrice"))*item.get("tradedQuantity")
-                                    open_realised_pnl = nettradelist[index].get("val")
+                                    open_realised_pnl = open_realised_pnl + 0 - (item.get("tradedPrice")*item.get("tradedQuantity"))
                                     nettradelist[index]['tradeqty'] = 0
+                                    # st.write("buyopen" + open_realised_pnl)
                                     break
                                 if nettradelist[index].get("tradeqty") > 0 and "SELL" in item["transactionType"]:
-                                    nettradelist[index]["val"]  =  nettradelist[index].get("val")  + (item.get("tradedPrice") - nettradelist[index].get("ltp"))*item.get("tradedQuantity")
-                                    open_realised_pnl = nettradelist[index].get("val")
-                                    nettradelist[index]['tradeqty'] = 0 
+                                    open_realised_pnl = open_realised_pnl + item.get("tradedPrice")*item.get("tradedQuantity")
+                                    nettradelist[index]['tradeqty'] = 0
+                                    # st.write("sellopen" + open_realised_pnl) 
                                     break
                     pagecount = pagecount + 1
             else:
                 del nettradelist[index]
             index = index + 1  
-          
+         
         i = 0       
         while(i < len(nettradelist)):
             
@@ -164,13 +164,12 @@ def run():
                     match = re.search(r"NIFTY (\d{2}) (\w{3})", nettradelist[i]["contract"])
                     expiry_date = datetime.datetime(parser.parse(nettradelist[i]["ltt"]).year,month_dict.get(match.group(2).upper()),int(match.group(1)))                                     
                     if expiry_date.date() > end_date:                  
-                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[i]['val']
-                    else:
-                        open_realised_pnl = open_realised_pnl + nettradelist[i]['val']
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[i]['tradeqty'] * nettradelist[i]['tradedPrice']                    
                 
             i = i + 1        
-        return(open_realised_pnl)
-        
+        # st.write(open_realised_pnl)
+        # st.write(open_unrealised_pnl)
+        return(open_realised_pnl + open_unrealised_pnl)
 
     def mtsm_pnl():
         mtsm_starttime = datetime.time(9, 16, 0)
