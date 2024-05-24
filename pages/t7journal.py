@@ -20,6 +20,7 @@ from st_pages import Page, show_pages, add_page_title
 import auth_functions
 import time
 import pandas as pd
+import re
 
 from streamlit.logger import get_logger
 from dateutil import parser 
@@ -39,7 +40,7 @@ def run():
     st.set_page_config(
         page_title="T7 Journal",
         page_icon="📘",
-        layout="wide",
+        # layout="wide",
     )
 
     show_pages(
@@ -61,23 +62,28 @@ def run():
     def w_div(n, d):
         return n / d if d else 0
 
-    def get_open_trades(trade):
+    def get_open_trades(trade):        
         
         nettradelist = dict()
-        
+        open_unrealised_pnl = open_realised_pnl = 0
         index = j = 0
-        contract_in_list = False     
+        contract_in_list = False         
         
-        length = len(trade)           
+        month_dict = {
+            "JAN": 1, "FEB": 2, "MAR": 3, "APR": 4,
+            "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8,
+            "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12
+         }
         
-        while(index < length):           
+        length = len(trade)
+        while(index < length): 
             
-            j = 0
             contract_in_list = False
             len_net = len(nettradelist)
             
             if "BUY" in trade[index].get("transactionType"): 
                 
+                j = 0
                 while(j < len_net):                    
                     if(nettradelist[j].get("contract") == trade[index].get("customSymbol")):                                    
                         qty = nettradelist[j]['tradeqty'] + trade[index].get("tradedQuantity")
@@ -95,6 +101,7 @@ def run():
                      
             if "SELL" in trade[index].get("transactionType"):
                 
+                j = 0
                 while(j < len_net):
                     if(nettradelist[j].get("contract") == trade[index].get("customSymbol")):                                    
                         qty = nettradelist[j]['tradeqty'] - trade[index].get("tradedQuantity")
@@ -110,29 +117,59 @@ def run():
                     
                     nettradelist[j] = {'contract':trade[index].get("customSymbol"),'tradeqty':0 - trade[index].get("tradedQuantity"),'ltp':trade[index].get("tradedPrice"),'ltt':trade[index].get("exchangeTime"),'val':0 - (trade[index].get("tradedQuantity") * trade[index].get("tradedPrice"))}
                                 
-            index = index + 1   
-
-        # st.write("tradelist***************************************")
-        # st.write(trade)
-        # st.write("nettradelist***************************************")
-        # st.write(nettradelist) 
+            index = index + 1 
         
+        index = 0
+        pagecount = 0     
+      
+        length = len(nettradelist)  
         
-        # test = sorted(nettradelist.items(), key = lambda x: x[1]['ltt'])
-        # st.write(test)  
-        # out = test.pop(len(test)"NA")
-        # st.write(out)
-        # st.write(out[1])    
-
-        i = 0
-        sum = 0
+        while(index < length): 
+            
+            if(nettradelist[index]['tradeqty'] != 0):                              
+                
+                current_date = start_date
+                prev_end_date = start_date - datetime.timedelta(days=10)  
+                
+                while current_date >= prev_end_date:    
+                    
+                    prev_data = dhan.get_trade_history(current_date.strftime("%Y-%m-%d"),current_date.strftime("%Y-%m-%d"),page_number=pagecount).get("data")
+                
+                    if(not prev_data):
+                        pagecount = 0
+                        current_date = current_date - datetime.timedelta(days=1)                              
+                    else:
+                        for item in prev_data:                         
+                            if (nettradelist[index].get("contract") == item.get("customSymbol")) and (abs(nettradelist[index].get("tradeqty")) == item.get("tradedQuantity")):
+                                if nettradelist[index].get("tradeqty") < 0 and "BUY" in item["transactionType"]:
+                                    nettradelist[index]["val"]  =  nettradelist[index].get("val")  + (nettradelist[index].get("ltp") - item.get("tradedPrice"))*item.get("tradedQuantity")
+                                    open_realised_pnl = nettradelist[index].get("val")
+                                    nettradelist[index]['tradeqty'] = 0
+                                    break
+                                if nettradelist[index].get("tradeqty") > 0 and "SELL" in item["transactionType"]:
+                                    nettradelist[index]["val"]  =  nettradelist[index].get("val")  + (item.get("tradedPrice") - nettradelist[index].get("ltp"))*item.get("tradedQuantity")
+                                    open_realised_pnl = nettradelist[index].get("val")
+                                    nettradelist[index]['tradeqty'] = 0 
+                                    break
+                    pagecount = pagecount + 1
+            else:
+                del nettradelist[index]
+            index = index + 1  
+          
+        i = 0       
         while(i < len(nettradelist)):
-            if(nettradelist[i]['tradeqty'] != 0):
-                sum = sum + nettradelist[i]['val']
-            i = i + 1 
-
-        #st.write(sum)
-        return(sum)
+            
+            if(i in nettradelist) and (nettradelist[i].get('tradeqty') != 0):                
+                if("BANKNIFTY" not in nettradelist[i]["contract"] and "FINNIFTY" not in nettradelist[i]["contract"] and "NIFTY" in nettradelist[i]["contract"]):
+                    match = re.search(r"NIFTY (\d{2}) (\w{3})", nettradelist[i]["contract"])
+                    expiry_date = datetime.datetime(parser.parse(nettradelist[i]["ltt"]).year,month_dict.get(match.group(2).upper()),int(match.group(1)))                                     
+                    if expiry_date.date() > end_date:                  
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[i]['val']
+                    else:
+                        open_realised_pnl = open_realised_pnl + nettradelist[i]['val']
+                
+            i = i + 1        
+        return(open_realised_pnl)
         
 
     def mtsm_pnl():
@@ -183,17 +220,11 @@ def run():
         data_dict = {}
 
         # Create a placeholder for the dataframe
-        dataframe_placeholder = st.empty()
-
-        dhan = dhanhq(clientid,token)
+        dataframe_placeholder = st.empty()        
         nt = 0
         fg = False
         while current_date <= end_date:
-            # urllink = "https://api.dhan.co/tradeHistory/"+ current_date.strftime("%Y-%m-%d") + "/" + current_date.strftime("%Y-%m-%d") + "/" + str(pagecount) + ""
-            # myobj = {"Content-Type": "application/json", "access-token": token}
-            # x = requests.get(url = urllink, headers = myobj)
-            # data = json.loads(x.text)
-            
+                       
             data = dhan.get_trade_history(current_date.strftime("%Y-%m-%d"),current_date.strftime("%Y-%m-%d"),page_number=pagecount).get("data")            
             
             if(not data):
@@ -305,7 +336,7 @@ def run():
                         fg = True
                     if "BANKNIFTY" not in item["customSymbol"] and "FINNIFTY" not in item["customSymbol"] and "NIFTY" in item["customSymbol"] and "MARGIN" in item["productType"] :
                         strike = int(item["customSymbol"].split()[3])                        
-                        if (strike % 50 == 0 and strike % 100 != 0) and (item["tradedPrice"] < 100):
+                        if (strike % 50 == 0 and strike % 100 != 0) :
                             if "BUY" in item["transactionType"]: 
                                 os_nifty_netbuy = os_nifty_netbuy +  item["tradedPrice"] * item["tradedQuantity"]
                                 os_nifty_buytrades = os_nifty_buytrades + 1
@@ -817,7 +848,7 @@ def run():
                     st.error(":red[Client ID is not correct]", icon = "🚨")                    
     
     #main 
- 
+    
     key_dict = json.loads(st.secrets["textkey"])
     creds = service_account.Credentials.from_service_account_info(key_dict)
     db = firestore.Client(credentials=creds, project="t7member-a7b8a")   
@@ -857,7 +888,9 @@ def run():
         st.button("Save Settings", type="primary", on_click=save_setting,use_container_width=False) 
     with col3:
         st.button("Compute PnL", type="primary", on_click=click_button,use_container_width=False)   
-    st.button("Logout", type="primary", on_click=logout,use_container_width=True)    
+    st.button("Logout", type="primary", on_click=logout,use_container_width=True) 
+
+    dhan = dhanhq(clientid,token)   
         
  
 if __name__ == "__main__":
