@@ -46,7 +46,7 @@ def run():
     show_pages(
         [
             Page("pages/t7journal.py", "T7 Journal", "📘"),
-            Page("Home.py", "Home","🛋️"),
+            Page("Home.py", "Home","🏠"),
         ]
     )
 
@@ -67,7 +67,8 @@ def run():
         nettradelist = dict()
         open_unrealised_pnl = open_realised_pnl = 0
         index = j = 0
-        contract_in_list = False         
+        contract_in_list = False
+        adj_amount = 0         
         
         month_dict = {
             "JAN": 1, "FEB": 2, "MAR": 3, "APR": 4,
@@ -123,7 +124,7 @@ def run():
         pagecount = 0     
       
         length = len(nettradelist)  
-        
+        # st.write(nettradelist)
         while(index < length): 
             
             if(nettradelist[index]['tradeqty'] != 0):                              
@@ -154,21 +155,23 @@ def run():
                     pagecount = pagecount + 1
             else:
                 del nettradelist[index]
-            index = index + 1  
+            index = index + 1     
          
-        i = 0       
-        while(i < len(nettradelist)):
-            
-            if(i in nettradelist) and (nettradelist[i].get('tradeqty') != 0):                
-                if("BANKNIFTY" not in nettradelist[i]["contract"] and "FINNIFTY" not in nettradelist[i]["contract"] and "NIFTY" in nettradelist[i]["contract"]):
-                    match = re.search(r"NIFTY (\d{2}) (\w{3})", nettradelist[i]["contract"])
-                    expiry_date = datetime.datetime(parser.parse(nettradelist[i]["ltt"]).year,month_dict.get(match.group(2).upper()),int(match.group(1)))                                     
-                    if expiry_date.date() > end_date:                  
-                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[i]['tradeqty'] * nettradelist[i]['tradedPrice']                    
+        for item in nettradelist:
+                        
+            if("BANKNIFTY" not in nettradelist[item].get("contract") and "FINNIFTY" not in nettradelist[item].get("contract") and "NIFTY" in nettradelist[item].get("contract")):
+                                  
+                    match = re.search(r"NIFTY (\d{2}) (\w{3}) (\d{5})", nettradelist[item].get("contract"))                     
+                    
+                    expiry_date = datetime.datetime(parser.parse(nettradelist[item]["ltt"]).year,month_dict.get(match.group(2).upper()),int(match.group(1)))                                     
+                                    
+                    if expiry_date.date() > end_date :                  
+                        
+                        open_unrealised_pnl =  open_unrealised_pnl + (0 - nettradelist[item]['tradeqty'] * nettradelist[item]['ltp'])                   
                 
-            i = i + 1        
-        # st.write(open_realised_pnl)
-        # st.write(open_unrealised_pnl)
+               
+        # st.write(open_realised_pnl + open_unrealised_pnl)
+        
         return(open_realised_pnl + open_unrealised_pnl)
 
     def mtsm_pnl():
