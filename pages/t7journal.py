@@ -167,8 +167,29 @@ def run():
                                     
                     if expiry_date.date() > end_date :                  
                         
-                        open_unrealised_pnl =  open_unrealised_pnl + (0 - nettradelist[item]['tradeqty'] * nettradelist[item]['ltp'])                   
+                        open_unrealised_pnl =  open_unrealised_pnl + (0 - nettradelist[item]['tradeqty'] * nettradelist[item]['ltp'])
+            
+            if "SILVER" in nettradelist[item].get("contract") and "SILVERM" not in nettradelist[item].get("contract") : 
                 
+                if("FUT" in nettradelist[item].get("contract")):
+                    match = re.search(r"SILVER (\w{3}) (\w{3})", nettradelist[item].get("contract"))  
+                    if(month_dict.get(match.group(1)) > end_date.month):
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[item]['tradeqty'] * nettradelist[item]['ltp']
+                else:
+                    match = re.search(r"SILVER (\d{2}) (\w{3})", nettradelist[item].get("contract"))  
+                    if(month_dict.get(match.group(2)) > end_date.month):
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[item]['tradeqty'] * nettradelist[item]['ltp']
+                              
+            if "SILVERM" in nettradelist[item].get("contract"): 
+
+                if("FUT" in nettradelist[item].get("contract")):
+                    match = re.search(r"SILVERM (\w{3}) (\w{3})", nettradelist[item].get("contract"))  
+                    if(month_dict.get(match.group(1)) > end_date.month):
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[item]['tradeqty'] * nettradelist[item]['ltp']
+                else:
+                    match = re.search(r"SILVERM (\d{2}) (\w{3})", nettradelist[item].get("contract"))  
+                    if(month_dict.get(match.group(2)) > end_date.month):
+                        open_unrealised_pnl =  open_unrealised_pnl + nettradelist[item]['tradeqty'] * nettradelist[item]['ltp']    
                
         # st.write(open_realised_pnl + open_unrealised_pnl)
         
